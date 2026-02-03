@@ -1,0 +1,20 @@
+# Comandos para Subir a GitHub
+
+# Paso 1: Inicializar Git (si no está inicializado)
+git init
+
+# Paso 2: Añadir todos los archivos
+git add .
+
+# Paso 3: Crear el primer commit
+git commit -m "Initial commit: SEO Audit Dashboard"
+
+# Paso 4: Conectar con GitHub
+# IMPORTANTE: Reemplaza TU-USUARIO con tu usuario de GitHub
+git remote add origin https://github.com/TU-USUARIO/errores-caldea.git
+
+# Paso 5: Cambiar a rama main
+git branch -M main
+
+# Paso 6: Subir el código a GitHub
+git push -u origin main
