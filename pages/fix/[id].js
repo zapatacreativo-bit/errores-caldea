@@ -4,6 +4,8 @@ import { supabase } from '../../lib/supabaseClient'
 import URLFixer from '../../components/URLFixer'
 import Head from 'next/head'
 import Link from 'next/link'
+import GlassCard from '../../components/ui/GlassCard'
+import { ArrowLeft, CheckCircle, AlertTriangle, AlertOctagon, Activity } from 'lucide-react'
 
 export default function FixPage() {
     const router = useRouter()
@@ -30,7 +32,6 @@ export default function FixPage() {
 
     useEffect(() => {
         if (id && session) {
-            // First load: get issue info and initial data
             fetchIssueDetails()
             fetchUrls(1, 'all')
         }
@@ -54,7 +55,6 @@ export default function FixPage() {
         try {
             setLoading(true)
 
-            // 1. Get Count
             let countQuery = supabase
                 .from('audit_urls')
                 .select('*', { count: 'exact', head: true })
@@ -68,7 +68,6 @@ export default function FixPage() {
             if (countError) throw countError
             setTotalUrls(count || 0)
 
-            // 2. Get Data for current page
             let dataQuery = supabase
                 .from('audit_urls')
                 .select('*')
@@ -114,7 +113,7 @@ export default function FixPage() {
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Cargando...</p>
+                    <p className="text-gray-400">Cargando datos...</p>
                 </div>
             </div>
         )
@@ -122,10 +121,10 @@ export default function FixPage() {
 
     if (!issueType) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="min-h-screen bg-black flex items-center justify-center text-gray-200">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Error no encontrado</h1>
-                    <Link href="/" className="text-blue-600 hover:text-blue-800">
+                    <h1 className="text-2xl font-bold text-white mb-4">Error no encontrado</h1>
+                    <Link href="/" className="text-blue-400 hover:text-blue-300">
                         Volver al dashboard
                     </Link>
                 </div>
@@ -142,27 +141,37 @@ export default function FixPage() {
 
     const progress = stats.total > 0 ? Math.round((stats.fixed / stats.total) * 100) : 0
 
+    const priorityConfig = {
+        High: { color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', icon: AlertOctagon },
+        Medium: { color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', icon: AlertTriangle },
+        Low: { color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20', icon: Activity }
+    }[issueType.priority] || { color: 'text-gray-400', bg: 'bg-gray-500/10', border: 'border-gray-500/20', icon: Activity }
+
+    const PriorityIcon = priorityConfig.icon
+
     return (
         <>
             <Head>
                 <title>{issueType.title} - Auditoría SEO Caldea</title>
             </Head>
 
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen text-gray-200 pb-20">
                 {/* Header */}
-                <header className="bg-white shadow-sm border-b border-gray-200">
+                <header className="bg-black/20 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
                     <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                         <div>
-                            <Link href="/" className="text-blue-600 hover:text-blue-800 text-sm font-medium mb-2 inline-block">
-                                ← Volver al Dashboard
+                            <Link href="/" className="text-gray-400 hover:text-white text-sm font-medium mb-1 inline-flex items-center gap-2 transition-colors">
+                                <ArrowLeft className="w-4 h-4" /> Volver al Dashboard
                             </Link>
-                            <h1 className="text-2xl font-bold text-gray-900">Caldea SEO Audit <span className="text-sm text-red-600 font-bold ml-2">v1.2 UPDATED</span></h1>
+                            <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                                Caldea SEO Audit <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">v1.2 LIVE</span>
+                            </h1>
                         </div>
                         <div className="flex items-center gap-4">
-                            <span className="text-sm text-gray-600">{session.user.email}</span>
+                            <span className="text-sm text-gray-400 hidden sm:block">{session.user.email}</span>
                             <button
                                 onClick={handleSignOut}
-                                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                className="bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:text-white"
                             >
                                 Cerrar Sesión
                             </button>
@@ -171,48 +180,56 @@ export default function FixPage() {
                 </header>
 
                 {/* Content */}
-                <div className="container mx-auto p-6">
-                    {/* Issue Header */}
-                    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-                        <div className="flex items-start justify-between mb-4">
-                            <div>
-                                <div className="flex items-center gap-3 mb-2">
-                                    <h2 className="text-3xl font-bold text-gray-900">{issueType.title}</h2>
-                                    <span className={`py-1 px-3 rounded-full text-xs font-semibold ${issueType.priority === 'High' ? 'bg-red-100 text-red-800' :
-                                        issueType.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                            'bg-blue-100 text-blue-800'
-                                        }`}>
-                                        Prioridad {issueType.priority === 'High' ? 'Alta' : issueType.priority === 'Medium' ? 'Media' : 'Baja'}
-                                    </span>
-                                </div>
-                                <p className="text-gray-600 mb-2">{issueType.description}</p>
-                                <p className="text-sm text-gray-500">
-                                    Categoría: <span className="font-medium">{issueType.categories?.name}</span>
-                                </p>
-                            </div>
-                        </div>
+                <div className="container mx-auto p-6 max-w-6xl">
+                    {/* Issue Header Card */}
+                    <GlassCard className="mb-8 p-8 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none" />
 
-                        {/* Progress Bar */}
-                        <div className="mt-6">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm font-medium text-gray-700">Progreso de Corrección</span>
-                                <span className="text-sm font-bold text-gray-900">{progress}%</span>
+                        <div className="relative z-10">
+                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-6">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <h2 className="text-3xl font-bold text-white tracking-tight">{issueType.title}</h2>
+                                        <span className={`py-1.5 px-3 rounded-lg text-xs font-bold border flex items-center gap-2 ${priorityConfig.bg} ${priorityConfig.color} ${priorityConfig.border}`}>
+                                            <PriorityIcon className="w-3.5 h-3.5" />
+                                            {issueType.priority === 'High' ? 'ALTA' : issueType.priority === 'Medium' ? 'MEDIA' : 'BAJA'}
+                                        </span>
+                                    </div>
+                                    <p className="text-gray-300 text-lg leading-relaxed max-w-3xl opacity-90">{issueType.description}</p>
+                                    <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-md bg-white/5 border border-white/10">
+                                        <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Categoría</span>
+                                        <span className="text-sm text-gray-200 font-medium">{issueType.categories?.name}</span>
+                                    </div>
+                                </div>
+
+                                {/* Mini Stats */}
+                                <div className="flex gap-4">
+                                    <div className="text-center p-3 rounded-xl bg-white/5 border border-white/10 min-w-[80px]">
+                                        <div className="text-2xl font-bold text-white">{stats.fixed}</div>
+                                        <div className="text-[10px] text-gray-400 uppercase tracking-wider">Corregidos</div>
+                                    </div>
+                                    <div className="text-center p-3 rounded-xl bg-white/5 border border-white/10 min-w-[80px]">
+                                        <div className="text-2xl font-bold text-white">{stats.pending}</div>
+                                        <div className="text-[10px] text-gray-400 uppercase tracking-wider">Pendientes</div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-3">
-                                <div
-                                    className={`h-3 rounded-full transition-all duration-300 ${progress === 100 ? 'bg-green-500' : 'bg-blue-500'
-                                        }`}
-                                    style={{ width: `${progress}%` }}
-                                ></div>
-                            </div>
-                            <div className="flex justify-between mt-2 text-xs text-gray-600">
-                                <span>Total: {stats.total}</span>
-                                <span className="text-green-600 font-semibold">Corregidos: {stats.fixed}</span>
-                                <span className="text-yellow-600">Pendientes: {stats.pending}</span>
-                                <span className="text-gray-500">Ignorados: {stats.ignored}</span>
+
+                            {/* Progress Bar */}
+                            <div className="bg-black/20 rounded-xl p-6 border border-white/5">
+                                <div className="flex justify-between items-end mb-3">
+                                    <span className="text-sm font-medium text-gray-300">Progreso Total</span>
+                                    <span className={`text-2xl font-bold ${progress === 100 ? 'text-green-400' : 'text-blue-400'}`}>{progress}%</span>
+                                </div>
+                                <div className="w-full bg-gray-800/50 rounded-full h-3 overflow-hidden border border-white/5">
+                                    <div
+                                        className={`h-full rounded-full transition-all duration-1000 ease-out ${progress === 100 ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]' : 'bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]'}`}
+                                        style={{ width: `${progress}%` }}
+                                    ></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </GlassCard>
 
                     {/* URL Fixer Component */}
                     <URLFixer
