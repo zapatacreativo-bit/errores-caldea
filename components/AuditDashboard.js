@@ -4,7 +4,7 @@ import Link from 'next/link'
 import GlassCard from './ui/GlassCard'
 import OnlineUsers from './OnlineUsers'
 import ChatWidget from './ChatWidget' // Import ChatWidget
-import { getHourlyQuote } from '../lib/quotes'
+import { getRandomQuote } from '../lib/quotes'
 import { Activity, CheckCircle, AlertTriangle, AlertOctagon } from 'lucide-react'
 
 export default function AuditDashboard({ session }) {
@@ -23,7 +23,7 @@ export default function AuditDashboard({ session }) {
 
     useEffect(() => {
         fetchIssues()
-        setQuote(getHourlyQuote())
+        setQuote(getRandomQuote())
     }, [])
 
     // ... fetchIssues logic remains ...
@@ -111,7 +111,7 @@ export default function AuditDashboard({ session }) {
                         "{quote}"
                         <br />
                         <span className="text-blue-400 font-semibold not-italic text-xs mt-1 block tracking-wide">
-                            — Sabiduría SEO (Cambia cada hora) 🕒
+                            — Sabiduría SEO (Aleatorio) 🎲
                         </span>
                     </p>
                 </div>
