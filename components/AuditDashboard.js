@@ -200,8 +200,8 @@ export default function AuditDashboard({ session }) {
                         <button
                             key={f}
                             onClick={() => setFilter(f)}
-                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${filter === f
-                                ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]'
+                            className={`mx-2 first:ml-0 last:mr-0 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 shadow-md ${filter === f
+                                ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] scale-105'
                                 : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-transparent hover:border-white/10'
                                 }`}
                         >
@@ -215,10 +215,10 @@ export default function AuditDashboard({ session }) {
             </GlassCard>
 
             {/* Tabla Maestra */}
-            <div className="rounded-2xl border border-white/10 overflow-hidden bg-[#0A0A0A]/90 backdrop-blur-xl shadow-2xl">
+            <div className="rounded-2xl border border-white/10 overflow-auto max-h-[75vh] bg-[#0A0A0A]/90 backdrop-blur-xl shadow-2xl custom-scrollbar">
                 <table className="min-w-full leading-normal">
                     <thead>
-                        <tr className="bg-black/40 text-gray-300 uppercase text-xs leading-normal border-b border-white/10">
+                        <tr className="sticky top-0 z-20 bg-black text-gray-300 uppercase text-xs leading-normal border-b border-white/10 shadow-lg">
                             <th className="px-6 py-5 text-left font-bold tracking-wider text-blue-400/80">Tipo de Error</th>
                             <th className="px-6 py-5 text-left font-bold tracking-wider text-blue-400/80">Categoría</th>
                             <th className="px-6 py-5 text-left font-bold tracking-wider text-blue-400/80">Prioridad</th>
@@ -286,18 +286,20 @@ export default function AuditDashboard({ session }) {
                     </tbody>
                 </table>
 
-                {filteredIssues.length === 0 && (
-                    <div className="p-16 text-center text-gray-500 flex flex-col items-center justify-center">
-                        <div className="bg-white/5 p-4 rounded-full mb-4">
-                            <CheckCircle className="w-12 h-12 text-gray-600 opacity-50" />
+                {
+                    filteredIssues.length === 0 && (
+                        <div className="p-16 text-center text-gray-500 flex flex-col items-center justify-center">
+                            <div className="bg-white/5 p-4 rounded-full mb-4">
+                                <CheckCircle className="w-12 h-12 text-gray-600 opacity-50" />
+                            </div>
+                            <p className="text-lg font-medium text-gray-400">No hay errores en esta categoría.</p>
+                            <p className="text-sm text-gray-600 mt-1">¡Buen trabajo manteniendo el sitio limpio!</p>
                         </div>
-                        <p className="text-lg font-medium text-gray-400">No hay errores en esta categoría.</p>
-                        <p className="text-sm text-gray-600 mt-1">¡Buen trabajo manteniendo el sitio limpio!</p>
-                    </div>
-                )}
-            </div>
+                    )
+                }
+            </div >
             {/* Chat Widget */}
-            <ChatWidget session={session} />
-        </div>
+            < ChatWidget session={session} />
+        </div >
     )
 }

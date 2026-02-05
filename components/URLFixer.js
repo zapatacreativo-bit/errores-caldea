@@ -106,13 +106,13 @@ export default function URLFixer({
                 </div>
 
                 {/* Filtros */}
-                <div className="flex gap-2 flex-wrap bg-black/30 p-1 rounded-lg border border-white/5">
+                <div className="flex gap-4 flex-wrap bg-black/30 p-2 rounded-xl border border-white/5">
                     {['all', 'pending', 'fixed', 'ignored'].map(f => (
                         <button
                             key={f}
                             onClick={() => onFilterChange(f)}
-                            className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${filter === f
-                                ? 'bg-blue-600 text-white shadow-md'
+                            className={`mx-1 px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${filter === f
+                                ? 'bg-blue-600 text-white shadow-lg scale-105'
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >

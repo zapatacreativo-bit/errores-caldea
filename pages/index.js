@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient'
 import AuditDashboard from '../components/AuditDashboard'
 import GlassCard from '../components/ui/GlassCard'
 import Head from 'next/head'
+import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 
 export default function Home() {
     const [session, setSession] = useState(null)
@@ -11,6 +12,8 @@ export default function Home() {
     const [password, setPassword] = useState('')
     const [isSignUp, setIsSignUp] = useState(false)
     const [error, setError] = useState(null)
+    const [showPassword, setShowPassword] = useState(false)
+    const [capsLockActive, setCapsLockActive] = useState(false)
 
     useEffect(() => {
         // Verificar sesión actual
@@ -49,7 +52,27 @@ export default function Home() {
                 if (error) throw error
             }
         } catch (error) {
-            setError(error.message)
+            let userFriendlyMessage = error.message
+
+            if (error.message.includes('Invalid login credentials')) {
+                userFriendlyMessage = 'Email o contraseña incorrectos.'
+            } else if (error.message.includes('User already registered')) {
+                userFriendlyMessage = 'Este email ya está registrado.'
+            } else if (error.message.includes('Password should be')) {
+                userFriendlyMessage = 'La contraseña debe tener al menos 6 caracteres.'
+            } else if (error.message.includes('Email not confirmed')) {
+                userFriendlyMessage = 'Email no confirmado. Por favor, revisa tu correo.'
+            }
+
+            setError(userFriendlyMessage)
+        }
+    }
+
+    const checkCapsLock = (e) => {
+        if (e.getModifierState('CapsLock')) {
+            setCapsLockActive(true)
+        } else {
+            setCapsLockActive(false)
         }
     }
 
@@ -59,10 +82,10 @@ export default function Home() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-50">
+            <div className="flex items-center justify-center min-h-screen bg-[#050505]">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Cargando...</p>
+                    <p className="text-gray-400">Cargando...</p>
                 </div>
             </div>
         )
@@ -77,7 +100,7 @@ export default function Home() {
                     <meta name="viewport" content="width=device-width, initial-scale=1" />
                 </Head>
 
-                <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+                <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#050505]">
                     {/* Background Ethereal Elements */}
                     <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
                     <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
@@ -113,19 +136,36 @@ export default function Home() {
                                     <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1.5">
                                         Contraseña
                                     </label>
-                                    <input
-                                        id="password"
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition outline-none"
-                                        placeholder="••••••••"
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            onKeyUp={checkCapsLock}
+                                            required
+                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition outline-none pr-12"
+                                            placeholder="••••••••"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-500 hover:text-white transition-colors"
+                                        >
+                                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                        </button>
+                                    </div>
+                                    {capsLockActive && (
+                                        <div className="mt-2 flex items-center gap-1.5 text-amber-400 text-xs font-medium">
+                                            <AlertCircle size={14} />
+                                            Bloqueo de Mayúsculas activado
+                                        </div>
+                                    )}
                                 </div>
 
                                 {error && (
-                                    <div className="bg-red-500/10 border border-red-500/20 text-red-200 px-4 py-3 rounded-xl text-sm backdrop-blur-sm">
+                                    <div className="bg-red-500/10 border border-red-500/20 text-red-200 px-4 py-3 rounded-xl text-sm backdrop-blur-sm flex items-start gap-2">
+                                        <AlertCircle size={18} className="shrink-0 mt-0.5" />
                                         {error}
                                     </div>
                                 )}
