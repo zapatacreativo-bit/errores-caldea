@@ -127,10 +127,24 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
         }
     }
 
+    const [currentPage, setCurrentPage] = useState(1)
+    const ITEMS_PER_PAGE = 50
+
+    // Reset page when filter changes
+    const handleFilterChange = (newFilter) => {
+        setFilter(newFilter)
+        setCurrentPage(1)
+    }
+
     const filteredUrls = localUrls.filter(url => {
         if (filter === 'all') return true
         return url.status === filter
     })
+
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredUrls.length / ITEMS_PER_PAGE)
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const paginatedUrls = filteredUrls.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
     const stats = {
         all: localUrls.length,
@@ -146,14 +160,14 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-xl font-bold text-gray-800">Lista de URLs Afectadas</h3>
                     <span className="text-sm text-gray-500">
-                        {filteredUrls.length} de {localUrls.length} URLs
+                        {filteredUrls.length} de {localUrls.length} URLs (Mostrando {startIndex + 1}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredUrls.length)})
                     </span>
                 </div>
 
                 {/* Filtros */}
                 <div className="flex gap-2">
                     <button
-                        onClick={() => setFilter('all')}
+                        onClick={() => handleFilterChange('all')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'all'
                             ? 'bg-blue-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -162,7 +176,7 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                         Todos ({stats.all})
                     </button>
                     <button
-                        onClick={() => setFilter('pending')}
+                        onClick={() => handleFilterChange('pending')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'pending'
                             ? 'bg-yellow-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -171,7 +185,7 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                         Pendientes ({stats.pending})
                     </button>
                     <button
-                        onClick={() => setFilter('fixed')}
+                        onClick={() => handleFilterChange('fixed')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'fixed'
                             ? 'bg-green-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -180,7 +194,7 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                         Corregidos ({stats.fixed})
                     </button>
                     <button
-                        onClick={() => setFilter('ignored')}
+                        onClick={() => handleFilterChange('ignored')}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'ignored'
                             ? 'bg-gray-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -193,7 +207,7 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
 
             {/* Lista de URLs */}
             <ul className="divide-y divide-gray-200">
-                {filteredUrls.map((item) => {
+                {paginatedUrls.map((item) => {
                     const { mainUrl, secondaryUrl, secondaryLabel } = getDisplayValues(item);
                     return (
                         <li
@@ -225,6 +239,16 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                             </svg>
                                         </button>
+
+                                        {/* Toxicity Badge */}
+                                        {item.toxicity_score !== null && item.toxicity_score !== undefined && (
+                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${item.toxicity_score >= 60 ? 'bg-red-100 text-red-800' :
+                                                item.toxicity_score >= 30 ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-green-100 text-green-800'
+                                                }`}>
+                                                Toxicidad: {item.toxicity_score}
+                                            </span>
+                                        )}
                                     </div>
 
                                     {secondaryUrl && (
@@ -302,6 +326,35 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                 })
                 }
             </ul >
+
+            {/* Pagination Controls */}
+            {filteredUrls.length > 0 && (
+                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+                    <button
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 border border-gray-300 rounded-md text-sm font-medium ${currentPage === 1
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                            }`}
+                    >
+                        Anterior
+                    </button>
+                    <span className="text-sm text-gray-700">
+                        Página <span className="font-medium">{currentPage}</span> de <span className="font-medium">{totalPages}</span>
+                    </span>
+                    <button
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className={`px-4 py-2 border border-gray-300 rounded-md text-sm font-medium ${currentPage === totalPages
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                            }`}
+                    >
+                        Siguiente
+                    </button>
+                </div>
+            )}
 
             {/* Empty State */}
             {

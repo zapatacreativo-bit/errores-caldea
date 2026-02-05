@@ -57,20 +57,32 @@ async function importCsv(filePath) {
         const lines = fileContent.split(/\r?\n/).filter(line => line.trim() !== '');
 
         // Remove header
-        const headers = lines.shift().split(','); // issue_type_id,url,linked_from
-        console.log('Headers:', headers);
+        // Parse headers dynamically
+        const headers = lines.shift().split(',').map(h => h.trim().replace(/^['"]|['"]$/g, ''));
+        console.log('Headers found:', headers);
 
         const records = lines.map(line => {
-            // Handle simple CSV: Assuming no commas in URLs for this simple script, 
-            // but if there are, we'd need better parsing.
-            // For URLs, commas are rare but possible in query params.
-            // A robust regex or library is better, but this suffices for "sample_issues_import.csv"
+            // Simple split (note: this breaks if commas are inside quotes, but fits current requirements)
             const parts = line.split(',');
-            return {
-                issue_type_id: parseInt(parts[0]),
-                url: parts[1],
-                linked_from: parts[2]
-            };
+            const record = {};
+
+            headers.forEach((header, index) => {
+                let value = parts[index] ? parts[index].trim() : null;
+
+                // Map known columns
+                if (header === 'issue_type_id') record.issue_type_id = parseInt(value);
+                else if (header === 'url') record.url = value;
+                else if (header === 'linked_from') record.linked_from = value;
+                else if (header === 'toxicity_score' || header === 'toxicity') {
+                    // Only add if it's a valid number
+                    const score = parseInt(value);
+                    if (!isNaN(score)) {
+                        record.toxicity_score = score;
+                    }
+                }
+            });
+
+            return record;
         });
 
         console.log(`Parsed ${records.length} records. Uploading to Supabase...`);
