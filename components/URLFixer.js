@@ -261,7 +261,8 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                                 </div>
                             </div>
                         </li >
-                    ))
+                    )
+                })
                 }
             </ul >
 
