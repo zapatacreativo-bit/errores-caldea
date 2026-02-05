@@ -91,7 +91,7 @@ export default function AuditDashboard({ session }) {
                         <img
                             src="/logo-seo-madrid.png"
                             alt="SEO MADRID"
-                            className="relative h-20 w-auto object-contain transition-all duration-300 transform group-hover:scale-105 drop-shadow-[0_0_10px_rgba(255,255,255,0.15)]"
+                            className="relative h-28 w-auto object-contain transition-all duration-300 transform group-hover:scale-105 drop-shadow-[0_0_10px_rgba(255,255,255,0.15)]"
                         />
                     </div>
 
