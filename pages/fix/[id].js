@@ -23,45 +23,85 @@ export default function FixPage() {
         })
     }, [router])
 
+    const [page, setPage] = useState(1)
+    const [totalUrls, setTotalUrls] = useState(0)
+    const [filter, setFilter] = useState('all') // all, pending, fixed, ignored
+    const ITEMS_PER_PAGE = 50
+
     useEffect(() => {
-        console.log("--- VERSION 1.2 LOADED ---")
         if (id && session) {
-            fetchData()
+            // First load: get issue info and initial data
+            fetchIssueDetails()
+            fetchUrls(1, 'all')
         }
     }, [id, session])
 
-    async function fetchData() {
+    async function fetchIssueDetails() {
         try {
-            // Obtener información del tipo de error
-            const { data: issueData, error: issueError } = await supabase
+            const { data, error } = await supabase
                 .from('issue_types')
-                .select(`
-          *,
-          categories (name)
-        `)
+                .select(`*, categories (name)`)
                 .eq('id', id)
                 .single()
+            if (error) throw error
+            setIssueType(data)
+        } catch (error) {
+            console.error('Error fetching issue details:', error)
+        }
+    }
 
-            if (issueError) throw issueError
-            setIssueType(issueData)
+    async function fetchUrls(pageNum = 1, currentFilter = 'all') {
+        try {
+            setLoading(true)
 
-            // Obtener URLs afectadas
-            const { data: urlsData, error: urlsError } = await supabase
+            // 1. Get Count
+            let countQuery = supabase
+                .from('audit_urls')
+                .select('*', { count: 'exact', head: true })
+                .eq('issue_type_id', id)
+
+            if (currentFilter !== 'all') {
+                countQuery = countQuery.eq('status', currentFilter)
+            }
+
+            const { count, error: countError } = await countQuery
+            if (countError) throw countError
+            setTotalUrls(count || 0)
+
+            // 2. Get Data for current page
+            let dataQuery = supabase
                 .from('audit_urls')
                 .select('*')
                 .eq('issue_type_id', id)
-                .order('status', { ascending: true })
                 .order('created_at', { ascending: false })
-                .limit(50000) // Support full dataset (approx 20k rows)
 
-            if (urlsError) throw urlsError
-            console.log('DEBUG: First URL item:', urlsData[0])
-            setUrls(urlsData || [])
+            if (currentFilter !== 'all') {
+                dataQuery = dataQuery.eq('status', currentFilter)
+            }
+
+            const from = (pageNum - 1) * ITEMS_PER_PAGE
+            const to = from + ITEMS_PER_PAGE - 1
+
+            const { data, error } = await dataQuery.range(from, to)
+            if (error) throw error
+
+            setUrls(data || [])
         } catch (error) {
-            console.error('Error fetching data:', error)
+            console.error('Error fetching urls:', error)
         } finally {
             setLoading(false)
         }
+    }
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage)
+        fetchUrls(newPage, filter)
+    }
+
+    const handleFilterChange = (newFilter) => {
+        setFilter(newFilter)
+        setPage(1)
+        fetchUrls(1, newFilter)
     }
 
     const handleSignOut = async () => {
@@ -178,8 +218,13 @@ export default function FixPage() {
                     <URLFixer
                         urls={urls}
                         user={session.user}
-                        onUpdate={fetchData}
+                        onUpdate={() => fetchUrls(page, filter)}
                         issueTypeId={id}
+                        currentPage={page}
+                        onPageChange={handlePageChange}
+                        filter={filter}
+                        onFilterChange={handleFilterChange}
+                        totalCount={totalUrls}
                     />
                 </div>
             </div>
