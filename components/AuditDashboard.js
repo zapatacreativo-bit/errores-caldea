@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient'
 import Link from 'next/link'
 import GlassCard from './ui/GlassCard'
 import OnlineUsers from './OnlineUsers'
+import { getHourlyQuote } from '../lib/quotes'
 import { Activity, CheckCircle, AlertTriangle, AlertOctagon } from 'lucide-react'
 
 export default function AuditDashboard({ session }) {
@@ -16,9 +17,11 @@ export default function AuditDashboard({ session }) {
     })
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState('all') // all, High, Medium, Low
+    const [quote, setQuote] = useState("Cargando dosis de realidad...")
 
     useEffect(() => {
         fetchIssues()
+        setQuote(getHourlyQuote())
     }, [])
 
     // ... fetchIssues logic remains ...
@@ -90,10 +93,13 @@ export default function AuditDashboard({ session }) {
                 </div>
 
                 {/* Motivation Widget */}
-                <div className="hidden md:block">
-                    <p className="text-xs text-right text-gray-400 italic font-mono opacity-80">
-                        "Si el SEO fuera fácil, los desarrolladores dormirían 8 horas. <br />
-                        <span className="text-blue-400 font-semibold not-italic">¡Vamos a arreglar este desastre! 🚀</span>"
+                <div className="hidden md:block max-w-md">
+                    <p className="text-sm text-right text-gray-300 italic font-mono opacity-90 leading-relaxed bg-white/5 p-3 rounded-lg border border-white/5 shadow-inner">
+                        "{quote}"
+                        <br />
+                        <span className="text-blue-400 font-semibold not-italic text-xs mt-1 block tracking-wide">
+                            — Sabiduría SEO (Cambia cada hora) 🕒
+                        </span>
                     </p>
                 </div>
             </div>
