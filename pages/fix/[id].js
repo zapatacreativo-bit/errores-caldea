@@ -51,7 +51,7 @@ export default function FixPage() {
                 .eq('issue_type_id', id)
                 .order('status', { ascending: true })
                 .order('created_at', { ascending: false })
-                .limit(10000) // Increase default limit from 1000 to 10000
+                .limit(50000) // Support full dataset (approx 20k rows)
 
             if (urlsError) throw urlsError
             setUrls(urlsData || [])
