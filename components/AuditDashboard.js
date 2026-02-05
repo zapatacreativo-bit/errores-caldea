@@ -83,7 +83,19 @@ export default function AuditDashboard({ session }) {
         <div className="container mx-auto p-6 min-h-screen text-gray-100">
             {/* Header */}
             <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-start md:items-center gap-4 flex-col md:flex-row">
+                <div className="flex items-start md:items-center gap-6 flex-col md:flex-row">
+                    {/* Partner Logo */}
+                    <div className="relative group">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-red-400 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <div className="relative bg-white p-2 rounded-lg border border-white/10 transform transition-transform group-hover:scale-105">
+                            <img
+                                src="/logo-seo-madrid.png"
+                                alt="SEO MADRID - Expertos en SEO/SEM"
+                                className="h-12 w-auto object-contain block"
+                            />
+                        </div>
+                    </div>
+
                     <div>
                         <h1 className="text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-md">Auditoría SEO Caldea<span className="text-blue-400">.com</span></h1>
                         <p className="text-gray-400 font-medium">Dashboard de seguimiento y corrección de errores</p>
