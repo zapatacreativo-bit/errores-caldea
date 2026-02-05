@@ -170,21 +170,43 @@ export default function URLFixer({
 
             {/* Pagination Controls */}
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-                <button
-                    onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className={`px-4 py-2 border border-gray-300 rounded-md text-sm font-medium ${currentPage === 1 ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                >
-                    Anterior
-                </button>
-                <span className="text-sm text-gray-700">Página {currentPage} de {totalPages || 1}</span>
-                <button
-                    onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage >= totalPages}
-                    className={`px-4 py-2 border border-gray-300 rounded-md text-sm font-medium ${currentPage >= totalPages ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                >
-                    Siguiente
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => onPageChange(1)}
+                        disabled={currentPage === 1}
+                        className={`px-3 py-2 border border-gray-300 rounded-md text-sm font-medium ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                        « Inicio
+                    </button>
+                    <button
+                        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className={`px-4 py-2 border border-gray-300 rounded-md text-sm font-medium ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                        Anterior
+                    </button>
+                </div>
+
+                <span className="text-sm text-gray-700 font-medium">
+                    Página {currentPage} de {totalPages || 1}
+                </span>
+
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage >= totalPages}
+                        className={`px-4 py-2 border border-gray-300 rounded-md text-sm font-medium ${currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                        Siguiente
+                    </button>
+                    <button
+                        onClick={() => onPageChange(totalPages)}
+                        disabled={currentPage >= totalPages}
+                        className={`px-3 py-2 border border-gray-300 rounded-md text-sm font-medium ${currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                        Fin »
+                    </button>
+                </div>
             </div>
         </div>
     )
