@@ -9,7 +9,6 @@ export default function ChatWidget({ session }) {
     const [messages, setMessages] = useState([])
     const [unreadCount, setUnreadCount] = useState(0)
     const messagesEndRef = useRef(null)
-    const chatSound = useRef(null)
 
     // Scroll al último mensaje
     const scrollToBottom = () => {
@@ -23,64 +22,75 @@ export default function ChatWidget({ session }) {
         }
     }, [messages, isOpen, isMinimized])
 
+    // Cargar historial y suscribirse a cambios
     useEffect(() => {
         if (!session?.user) return
 
-        // Crear una instancia de audio para notificaciones (opcional, usaremos un sonido sutil del sistema o nada por ahora)
-        // chatSound.current = new Audio('/sounds/pop.mp3') 
+        fetchMessages()
 
-        const channel = supabase.channel('room-chat', {
-            config: {
-                broadcast: { self: true },
-            },
-        })
+        const channel = supabase.channel('room-chat-db')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'chat_messages',
+                },
+                (payload) => {
+                    const newMsg = payload.new
+                    setMessages((prev) => [...prev, newMsg])
 
-        channel
-            .on('broadcast', { event: 'message' }, ({ payload }) => {
-                setMessages((prev) => [...prev, payload])
-
-                // Incrementar contador si está cerrado o minimizado
-                if (!isOpen || isMinimized) {
-                    setUnreadCount(prev => prev + 1)
+                    // Incrementar contador si está cerrado o minimizado
+                    // Nota: Esto contará también tus propios mensajes si tienes varias pestañas, 
+                    // se puede filtrar por user_id si se desea.
+                    if (!isOpen || isMinimized) {
+                        setUnreadCount(prev => prev + 1)
+                    }
                 }
-            })
-            .subscribe((status) => {
-                if (status === 'SUBSCRIBED') {
-                    // Mensaje de sistema opcional al conectar
-                    // console.log('Conectado al chat global')
-                }
-            })
+            )
+            .subscribe()
 
         return () => {
             supabase.removeChannel(channel)
         }
     }, [session, isOpen, isMinimized])
 
+    const fetchMessages = async () => {
+        const { data, error } = await supabase
+            .from('chat_messages')
+            .select('*')
+            .order('created_at', { ascending: true })
+            .limit(50)
+
+        if (!error && data) {
+            setMessages(data)
+        }
+    }
+
     const sendMessage = async (e) => {
         e.preventDefault()
         if (!message.trim() || !session?.user) return
 
-        const newMessage = {
-            id: Date.now(), // ID temporal
-            text: message,
-            user_id: session.user.id,
-            email: session.user.email,
-            timestamp: new Date().toISOString(),
+        const textToSend = message
+        setMessage('') // Optimistic clear
+
+        const { error } = await supabase
+            .from('chat_messages')
+            .insert({
+                user_id: session.user.id,
+                email: session.user.email,
+                text: textToSend
+            })
+
+        if (error) {
+            console.error('Error sending message:', error)
+            setMessage(textToSend) // Restore if failed
         }
-
-        // Enviar via Broadcast
-        const channel = supabase.channel('room-chat')
-        await channel.send({
-            type: 'broadcast',
-            event: 'message',
-            payload: newMessage,
-        })
-
-        setMessage('')
     }
 
     // Formatear hora
     const formatTime = (isoString) => {
+        if (!isoString) return ''
         return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
 
@@ -129,7 +139,7 @@ export default function ChatWidget({ session }) {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                     {messages.length === 0 ? (
                         <div className="text-center text-gray-500 text-sm py-10 italic">
-                            Esta sala es efímera.<br />El historial desaparecerá al recargar.<br />¡Di hola! 👋
+                            No hay mensajes aún.<br />¡Sé el primero en escribir! 👋
                         </div>
                     ) : (
                         messages.map((msg) => {
@@ -151,7 +161,7 @@ export default function ChatWidget({ session }) {
                                         <p>{msg.text}</p>
                                     </div>
                                     <span className="text-[10px] text-gray-500 mt-1 px-1">
-                                        {formatTime(msg.timestamp)}
+                                        {formatTime(msg.created_at || msg.timestamp)}
                                     </span>
                                 </div>
                             )
