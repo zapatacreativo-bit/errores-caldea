@@ -51,6 +51,7 @@ export default function FixPage() {
                 .eq('issue_type_id', id)
                 .order('status', { ascending: true })
                 .order('created_at', { ascending: false })
+                .limit(10000) // Increase default limit from 1000 to 10000
 
             if (urlsError) throw urlsError
             setUrls(urlsData || [])
@@ -136,8 +137,8 @@ export default function FixPage() {
                                 <div className="flex items-center gap-3 mb-2">
                                     <h2 className="text-3xl font-bold text-gray-900">{issueType.title}</h2>
                                     <span className={`py-1 px-3 rounded-full text-xs font-semibold ${issueType.priority === 'High' ? 'bg-red-100 text-red-800' :
-                                            issueType.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                                'bg-blue-100 text-blue-800'
+                                        issueType.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                            'bg-blue-100 text-blue-800'
                                         }`}>
                                         Prioridad {issueType.priority === 'High' ? 'Alta' : issueType.priority === 'Medium' ? 'Media' : 'Baja'}
                                     </span>
@@ -176,6 +177,7 @@ export default function FixPage() {
                         urls={urls}
                         user={session.user}
                         onUpdate={fetchData}
+                        issueTypeId={id}
                     />
                 </div>
             </div>

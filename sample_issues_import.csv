@@ -1,0 +1,12 @@
+issue_type_id,url,linked_from
+1,https://caldea.com/ejemplo-error-404,https://caldea.com/pagina-origen
+1,https://caldea.com/otro-enlace-roto,https://caldea.com/home
+2,https://caldea.com/error-servidor-500,https://caldea.com/blog
+3,https://caldea.com/pagina-bloqueada-robots,https://caldea.com/admin
+4,https://caldea.com/redireccion-302,https://caldea.com/oferta-verano
+5,https://caldea.com/redireccion-301,https://caldea.com/antigua-url
+7,https://caldea.com/titulo-duplicado-A,https://caldea.com/categoria-spa
+7,https://caldea.com/titulo-duplicado-B,https://caldea.com/categoria-wellness
+11,https://caldea.com/assets/imagen-borrada.jpg,https://caldea.com/galeria
+13,https://caldea.com/producto-sin-traduccion,https://caldea.com/tienda
+15,https://caldea.com/pagina-destino,https://sitio-externo.com/backlink-toxico

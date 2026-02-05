@@ -94,7 +94,8 @@ INSERT INTO categories (name, slug) VALUES
 ('Técnico', 'technical'), 
 ('Contenido', 'content'), 
 ('Imágenes', 'images'), 
-('Localización', 'localization');
+('Localización', 'localization'),
+('Enlaces', 'links');
 
 -- Insertar Tipos de Error (Basados en la auditoría de Caldea)
 INSERT INTO issue_types (category_id, title, priority, description, total_count) VALUES 
@@ -120,7 +121,10 @@ INSERT INTO issue_types (category_id, title, priority, description, total_count)
 
 -- Localización
 (5, 'Enlaces de retorno perdidos (Hreflang)', 'Medium', 'Etiquetas hreflang sin reciprocidad.', 401),
-(5, 'Falta valor "x-default" (Hreflang)', 'Medium', 'Ausencia de etiqueta x-default en implementación hreflang.', 258);
+(5, 'Falta valor "x-default" (Hreflang)', 'Medium', 'Ausencia de etiqueta x-default en implementación hreflang.', 258),
+
+-- Enlaces
+(6, 'Enlaces de retroceso', 'Medium', 'Auditoría de enlaces de retroceso (Backlinks).', 0);
 
 -- ============================================
 -- VISTAS ÚTILES PARA REPORTES
