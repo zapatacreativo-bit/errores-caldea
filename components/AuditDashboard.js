@@ -118,8 +118,8 @@ export default function AuditDashboard() {
                         <button
                             onClick={() => setFilter('all')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'all'
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             Todos ({issues.length})
@@ -127,8 +127,8 @@ export default function AuditDashboard() {
                         <button
                             onClick={() => setFilter('High')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'High'
-                                    ? 'bg-red-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-red-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             Alta ({stats.high})
@@ -136,8 +136,8 @@ export default function AuditDashboard() {
                         <button
                             onClick={() => setFilter('Medium')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'Medium'
-                                    ? 'bg-yellow-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-yellow-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             Media ({stats.medium})
@@ -145,8 +145,8 @@ export default function AuditDashboard() {
                         <button
                             onClick={() => setFilter('Low')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === 'Low'
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             Baja ({stats.low})
@@ -178,16 +178,18 @@ export default function AuditDashboard() {
                             return (
                                 <tr key={issue.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                                     <td className="px-5 py-5 text-left">
-                                        <span className="font-medium text-gray-900">{issue.title}</span>
-                                        <p className="text-gray-500 text-xs mt-1 max-w-md">{issue.description}</p>
+                                        <Link href={`/fix/${issue.id}`} className="block group">
+                                            <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{issue.title}</span>
+                                            <p className="text-gray-500 text-xs mt-1 max-w-md group-hover:text-blue-500 transition-colors">{issue.description}</p>
+                                        </Link>
                                     </td>
                                     <td className="px-5 py-5 text-left">
                                         <span className="text-gray-700">{issue.category_name}</span>
                                     </td>
                                     <td className="px-5 py-5 text-left">
                                         <span className={`py-1 px-3 rounded-full text-xs font-semibold ${issue.priority === 'High' ? 'bg-red-100 text-red-800' :
-                                                issue.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-blue-100 text-blue-800'
+                                            issue.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-blue-100 text-blue-800'
                                             }`}>
                                             {issue.priority === 'High' ? 'Alta' : issue.priority === 'Medium' ? 'Media' : 'Baja'}
                                         </span>
