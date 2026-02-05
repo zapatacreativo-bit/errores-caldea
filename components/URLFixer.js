@@ -142,17 +142,33 @@ export default function URLFixer({
                                         </a>
 
                                         {/* Toxicity Badge */}
-                                        {item.toxicity_score !== null && item.toxicity_score !== undefined && (
-                                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold border ${item.toxicity_score >= 60 ? 'bg-red-500/20 text-red-300 border-red-500/30' :
-                                                    item.toxicity_score >= 30 ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
-                                                        'bg-green-500/20 text-green-300 border-green-500/30'
-                                                }`}>
-                                                <span className={`w-2 h-2 rounded-full ${item.toxicity_score >= 60 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.6)]' :
-                                                        item.toxicity_score >= 30 ? 'bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.6)]' :
-                                                            'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.6)]'
-                                                    }`}></span>
-                                                TOXICIDAD: {item.toxicity_score}
-                                            </span>
+                                        {/* Toxicity Badge - Premium Neon Style */}
+                                        {(item.toxicity_score !== null && item.toxicity_score !== undefined) && (
+                                            (() => {
+                                                const score = Number(item.toxicity_score);
+                                                const isHigh = score >= 60;
+                                                const isMedium = score >= 30 && score < 60;
+                                                // const isLow = score < 30;
+
+                                                const badgeStyle = isHigh
+                                                    ? 'bg-red-950/60 border-red-500/50 text-red-200 shadow-[0_0_15px_rgba(220,38,38,0.3)]'
+                                                    : isMedium
+                                                        ? 'bg-yellow-950/60 border-yellow-500/50 text-yellow-200 shadow-[0_0_15px_rgba(234,179,8,0.3)]'
+                                                        : 'bg-green-950/60 border-green-500/50 text-green-200 shadow-[0_0_15px_rgba(34,197,94,0.3)]';
+
+                                                const dotStyle = isHigh
+                                                    ? 'bg-red-500 shadow-[0_0_10px_#ef4444] animate-pulse'
+                                                    : isMedium
+                                                        ? 'bg-yellow-500 shadow-[0_0_10px_#eab308]'
+                                                        : 'bg-green-500 shadow-[0_0_10px_#22c55e]';
+
+                                                return (
+                                                    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md transition-all hover:scale-105 ${badgeStyle}`}>
+                                                        <span className={`w-2.5 h-2.5 rounded-full ${dotStyle}`}></span>
+                                                        <span className="tracking-wide">TOXICIDAD: {score}</span>
+                                                    </span>
+                                                );
+                                            })()
                                         )}
                                     </div>
 
