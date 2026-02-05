@@ -24,6 +24,7 @@ export default function FixPage() {
     }, [router])
 
     useEffect(() => {
+        console.log("--- VERSION 1.2 LOADED ---")
         if (id && session) {
             fetchData()
         }
@@ -114,7 +115,7 @@ export default function FixPage() {
                             <Link href="/" className="text-blue-600 hover:text-blue-800 text-sm font-medium mb-2 inline-block">
                                 ← Volver al Dashboard
                             </Link>
-                            <h1 className="text-2xl font-bold text-gray-900">Caldea SEO Audit <span className="text-xs text-gray-400 font-normal">v1.1</span></h1>
+                            <h1 className="text-2xl font-bold text-gray-900">Caldea SEO Audit <span className="text-sm text-red-600 font-bold ml-2">v1.2 UPDATED</span></h1>
                         </div>
                         <div className="flex items-center gap-4">
                             <span className="text-sm text-gray-600">{session.user.email}</span>
