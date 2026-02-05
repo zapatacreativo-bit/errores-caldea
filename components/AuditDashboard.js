@@ -111,7 +111,7 @@ export default function AuditDashboard({ session }) {
                         "{quote}"
                         <br />
                         <span className="text-blue-400 font-semibold not-italic text-xs mt-1 block tracking-wide">
-                            — Sabiduría SEO (Aleatorio) 🎲
+                            Consejo de Sabios...🎲
                         </span>
                     </p>
                 </div>
@@ -119,22 +119,66 @@ export default function AuditDashboard({ session }) {
 
             {/* KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <GlassCard title="Prioridad Alta" icon={AlertOctagon} className="border-l-4 border-l-red-500 bg-red-500/5" delay={0.1}>
+                <GlassCard
+                    title="Prioridad Alta"
+                    icon={AlertOctagon}
+                    className="border-l-4 border-l-red-500 bg-red-500/5"
+                    delay={0.1}
+                    backContent={
+                        <div className="text-center">
+                            <h4 className="text-xl font-black text-red-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">¡ESTO ES ESPARTA!</h4>
+                            <p className="text-sm text-gray-300 font-medium">Sin piedad con los errores críticos.</p>
+                        </div>
+                    }
+                >
                     <p className="text-4xl font-bold text-white mt-2 drop-shadow-lg">{stats.high}</p>
                     <p className="text-sm text-red-200/70 mt-1 font-medium">Críticos</p>
                 </GlassCard>
 
-                <GlassCard title="Prioridad Media" icon={AlertTriangle} className="border-l-4 border-l-yellow-500 bg-yellow-500/5" delay={0.2}>
+                <GlassCard
+                    title="Prioridad Media"
+                    icon={AlertTriangle}
+                    className="border-l-4 border-l-yellow-500 bg-yellow-500/5"
+                    delay={0.2}
+                    backContent={
+                        <div className="text-center">
+                            <h4 className="text-xl font-black text-yellow-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]">¡HOLD!</h4>
+                            <p className="text-sm text-gray-300 font-medium">Mantén la línea, corrígelos todos.</p>
+                        </div>
+                    }
+                >
                     <p className="text-4xl font-bold text-white mt-2 drop-shadow-lg">{stats.medium}</p>
                     <p className="text-sm text-yellow-200/70 mt-1 font-medium">Advertencias</p>
                 </GlassCard>
 
-                <GlassCard title="Prioridad Baja" icon={Activity} className="border-l-4 border-l-blue-500 bg-blue-500/5" delay={0.3}>
+                <GlassCard
+                    title="Prioridad Baja"
+                    icon={Activity}
+                    className="border-l-4 border-l-blue-500 bg-blue-500/5"
+                    delay={0.3}
+                    backContent={
+                        <div className="text-center">
+                            <h4 className="text-xl font-black text-blue-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]">¡SIN DESCANSO!</h4>
+                            <p className="text-sm text-gray-300 font-medium">La perfección está en los detalles.</p>
+                        </div>
+                    }
+                >
                     <p className="text-4xl font-bold text-white mt-2 drop-shadow-lg">{stats.low}</p>
                     <p className="text-sm text-blue-200/70 mt-1 font-medium">Mejoras</p>
                 </GlassCard>
 
-                <GlassCard title="Progreso Global" icon={CheckCircle} className="border-l-4 border-l-green-500 bg-green-500/5" delay={0.4}>
+                <GlassCard
+                    title="Progreso Global"
+                    icon={CheckCircle}
+                    className="border-l-4 border-l-green-500 bg-green-500/5"
+                    delay={0.4}
+                    backContent={
+                        <div className="text-center">
+                            <h4 className="text-xl font-black text-green-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]">¡VICTORIA!</h4>
+                            <p className="text-sm text-gray-300 font-medium">Solo aceptamos el 100%.</p>
+                        </div>
+                    }
+                >
                     <div className="flex items-end gap-2 mt-2">
                         <p className="text-4xl font-bold text-white drop-shadow-lg">{completionPercentage}%</p>
                         <span className="text-xs text-green-200/70 mb-2 font-medium">Completado</span>

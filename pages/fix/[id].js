@@ -5,7 +5,7 @@ import URLFixer from '../../components/URLFixer'
 import Head from 'next/head'
 import Link from 'next/link'
 import GlassCard from '../../components/ui/GlassCard'
-import { ArrowLeft, CheckCircle, AlertTriangle, AlertOctagon, Activity } from 'lucide-react'
+import { ArrowLeft, CheckCircle, AlertTriangle, AlertOctagon, Activity, Power } from 'lucide-react'
 
 export default function FixPage() {
     const router = useRouter()
@@ -171,9 +171,10 @@ export default function FixPage() {
                             <span className="text-sm text-gray-400 hidden sm:block">{session.user.email}</span>
                             <button
                                 onClick={handleSignOut}
-                                className="bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:text-white"
+                                className="bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 text-gray-300 hover:text-red-400 p-2.5 rounded-full transition-all duration-300 shadow-lg hover:shadow-[0_0_15px_rgba(239,68,68,0.4)] group"
+                                title="Cerrar Sesión"
                             >
-                                Cerrar Sesión
+                                <Power className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
