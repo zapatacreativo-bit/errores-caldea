@@ -86,6 +86,30 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
         }
     }
 
+    const reactivateUrl = async (id) => {
+        setUpdating(id)
+
+        setLocalUrls(localUrls.map(u =>
+            u.id === id ? { ...u, status: 'pending' } : u
+        ))
+
+        try {
+            const { error } = await supabase
+                .from('audit_urls')
+                .update({ status: 'pending' })
+                .eq('id', id)
+
+            if (error) throw error
+            if (onUpdate) onUpdate()
+        } catch (error) {
+            console.error('Error:', error)
+            setLocalUrls(urls)
+            alert('Error al reactivar la URL.')
+        } finally {
+            setUpdating(null)
+        }
+    }
+
     const addNote = async (id, note) => {
         try {
             const { error } = await supabase
@@ -248,6 +272,7 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                                     </label>
 
                                     {/* Botón Ignorar */}
+                                    {/* Botón Ignorar */}
                                     {item.status !== 'ignored' && (
                                         <button
                                             onClick={() => ignoreUrl(item.id)}
@@ -256,6 +281,18 @@ export default function URLFixer({ urls, user, onUpdate, issueTypeId }) {
                                             title="Marcar como ignorado"
                                         >
                                             Ignorar
+                                        </button>
+                                    )}
+
+                                    {/* Botón Reactivar (Solo para ignorados) */}
+                                    {item.status === 'ignored' && (
+                                        <button
+                                            onClick={() => reactivateUrl(item.id)}
+                                            disabled={updating === item.id}
+                                            className="text-xs text-blue-500 hover:text-blue-700 transition-colors px-2 py-1 rounded hover:bg-blue-50"
+                                            title="Volver a pendientes"
+                                        >
+                                            Reactivar
                                         </button>
                                     )}
                                 </div>
