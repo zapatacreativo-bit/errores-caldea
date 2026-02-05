@@ -55,6 +55,7 @@ export default function FixPage() {
                 .limit(50000) // Support full dataset (approx 20k rows)
 
             if (urlsError) throw urlsError
+            console.log('DEBUG: First URL item:', urlsData[0])
             setUrls(urlsData || [])
         } catch (error) {
             console.error('Error fetching data:', error)
