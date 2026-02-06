@@ -1,0 +1,4 @@
+issue_type_id,url,page_title,meta_description,h1
+16,https://caldea.com/ejemplo-1,Título de Ejemplo 1,Esta es la meta descripción de ejemplo para la página 1,Encabezado H1 Principal
+16,https://caldea.com/ejemplo-2,Título de Ejemplo 2,Esta es la meta descripción de ejemplo para la página 2,Otro Encabezado H1
+16,https://caldea.com/ejemplo-3,Título Muy Largo Que Supera Los 60 Caracteres Recomendados Para SEO,Meta descripción que también es demasiado larga y supera los 160 caracteres recomendados por las mejores prácticas de SEO y debería acortarse para mejorar el CTR,H1 Duplicado

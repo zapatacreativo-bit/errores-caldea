@@ -27,13 +27,28 @@ export default function AuditDashboard({ session }) {
 
     async function fetchIssues() {
         try {
-            // Obtener tipos de error con estadísticas
-            const { data, error } = await supabase
+            console.log('Iniciando fetchIssues...');
+
+            // Timeout promise
+            const timeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Tiempo de espera agotado al conectar con Supabase')), 10000)
+            );
+
+            // Supabase query promise
+            const query = supabase
                 .from('v_issue_stats')
-                .select('*')
+                .select('*');
 
-            if (error) throw error
+            // Race them
+            const result = await Promise.race([query, timeout]);
+            const { data, error } = result;
 
+            if (error) {
+                console.error('Supabase error:', error);
+                throw error;
+            }
+
+            console.log('Datos recibidos de Supabase:', data?.length || 0, 'registros');
             setIssues(data || [])
 
             // Calcular estadísticas
@@ -51,8 +66,10 @@ export default function AuditDashboard({ session }) {
                 fixedUrls
             })
         } catch (error) {
-            console.error('Error fetching issues:', error)
+            console.error('Error detallado fetching issues:', error)
+            // Show error in UI state if needed, currently just logging
         } finally {
+            console.log('Finalizando fetchIssues, loading -> false');
             setLoading(false)
         }
     }
@@ -70,7 +87,8 @@ export default function AuditDashboard({ session }) {
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Cargando datos de auditoría...</p>
+                    <p className="text-gray-600">Cargando métricas de auditoría...</p>
+                    <p className="text-xs text-gray-500 mt-2">Conectando con base de datos...</p>
                 </div>
             </div>
         )
@@ -102,15 +120,15 @@ export default function AuditDashboard({ session }) {
                             <img
                                 src="/leonidas.png"
                                 alt="Leonidas"
-                                className="absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                                className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
                             />
-                            {/* Dark Overlay for Text Readability */}
-                            <div className="absolute inset-0 bg-black/20" />
+                            {/* Gradient for text readability only at bottom */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
 
                             {/* Text Content */}
                             <div className="text-center relative z-10 p-6">
                                 <h4 className="text-xl font-black text-red-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-[pulse_3s_infinite]">¡ESTO ES ESPARTA!</h4>
-                                <p className="text-sm text-gray-300 font-medium drop-shadow-md">Sin piedad con los errores críticos.</p>
+                                <p className="text-sm text-gray-200 font-medium drop-shadow-md">Sin piedad con los errores críticos.</p>
                             </div>
                         </div>
                     }
@@ -131,12 +149,12 @@ export default function AuditDashboard({ session }) {
                             <img
                                 src="/braveheart.png"
                                 alt="Hold"
-                                className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                                className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
                             />
-                            <div className="absolute inset-0 bg-black/30" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
                             <div className="text-center relative z-10 p-6">
                                 <h4 className="text-xl font-black text-yellow-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(234,179,8,0.8)] animate-pulse">¡HOLD!</h4>
-                                <p className="text-sm text-gray-300 font-medium drop-shadow-md">Mantén la línea.</p>
+                                <p className="text-sm text-gray-200 font-medium drop-shadow-md">Mantén la línea.</p>
                             </div>
                         </div>
                     }
@@ -157,12 +175,12 @@ export default function AuditDashboard({ session }) {
                             <img
                                 src="/rocky.png"
                                 alt="No Rest"
-                                className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                                className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
                             />
-                            <div className="absolute inset-0 bg-black/30" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
                             <div className="text-center relative z-10 p-6">
                                 <h4 className="text-xl font-black text-blue-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse">¡SIN DESCANSO!</h4>
-                                <p className="text-sm text-gray-300 font-medium drop-shadow-md">La perfección está en los detalles.</p>
+                                <p className="text-sm text-gray-200 font-medium drop-shadow-md">La perfección está en los detalles.</p>
                             </div>
                         </div>
                     }
@@ -183,12 +201,12 @@ export default function AuditDashboard({ session }) {
                             <img
                                 src="/gatsby.png"
                                 alt="Victory"
-                                className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                                className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
                             />
-                            <div className="absolute inset-0 bg-black/30" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
                             <div className="text-center relative z-10 p-6">
                                 <h4 className="text-xl font-black text-green-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(34,197,94,0.8)] animate-pulse">¡VICTORIA!</h4>
-                                <p className="text-sm text-gray-300 font-medium drop-shadow-md">Solo aceptamos el 100%.</p>
+                                <p className="text-sm text-gray-200 font-medium drop-shadow-md">Solo aceptamos el 100%.</p>
                             </div>
                         </div>
                     }

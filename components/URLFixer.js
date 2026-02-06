@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { Check, X, RefreshCw, ExternalLink, AlertTriangle, ArrowUp, ArrowDown } from 'lucide-react'
 
@@ -27,6 +27,31 @@ export default function URLFixer({
         setLocalUrls(urls)
     }, [urls])
 
+    // Duplicate Detection for Issue Type 16 (On-Page SEO)
+    const duplicates = useMemo(() => {
+        if (parseInt(issueTypeId) !== 16) return { titles: new Set(), metas: new Set(), h1s: new Set() };
+
+        const titleCount = {};
+        const metaCount = {};
+        const h1Count = {};
+
+        localUrls.forEach(item => {
+            const t = (item.page_title || '').trim().toLowerCase();
+            const m = (item.meta_description || '').trim().toLowerCase();
+            const h = (item.h1 || '').trim().toLowerCase();
+
+            if (t) titleCount[t] = (titleCount[t] || 0) + 1;
+            if (m) metaCount[m] = (metaCount[m] || 0) + 1;
+            if (h) h1Count[h] = (h1Count[h] || 0) + 1;
+        });
+
+        return {
+            titles: new Set(Object.keys(titleCount).filter(k => titleCount[k] > 1)),
+            metas: new Set(Object.keys(metaCount).filter(k => metaCount[k] > 1)),
+            h1s: new Set(Object.keys(h1Count).filter(k => h1Count[k] > 1))
+        };
+    }, [localUrls, issueTypeId]);
+
     // Sync Scrolls
     const handleTopScroll = () => {
         if (tableScrollRef.current && topScrollRef.current) {
@@ -41,23 +66,39 @@ export default function URLFixer({
     }
 
     const getDisplayValues = (item) => {
+        // Issue Type 16: On-Page SEO Audit (special columns)
+        if (parseInt(issueTypeId) === 16) {
+            return {
+                mainUrl: item.url,
+                secondaryUrl: null,
+                secondaryLabel: null,
+                isOnPageAudit: true,
+                pageTitle: item.page_title || '',
+                metaDescription: item.meta_description || '',
+                h1: item.h1 || ''
+            };
+        }
+        // Issue Type 15: Backlinks (swap URL/linked_from)
         if (parseInt(issueTypeId) === 15) {
             return {
                 mainUrl: item.linked_from,
                 secondaryUrl: item.url,
-                secondaryLabel: 'Encontrado en (Origen):'
+                secondaryLabel: 'Encontrado en (Origen):',
+                isOnPageAudit: false
             };
         }
         return {
             mainUrl: item.url,
             secondaryUrl: item.linked_from,
-            secondaryLabel: 'Encontrado en:'
+            secondaryLabel: 'Encontrado en:',
+            isOnPageAudit: false
         };
     };
 
     const toggleFix = async (id, currentStatus) => {
         setUpdating(id)
         const newStatus = currentStatus === 'fixed' ? 'pending' : 'fixed'
+        const targetItem = localUrls.find(u => u.id === id)
         setLocalUrls(prev => prev.map(u => u.id === id ? { ...u, status: newStatus } : u))
 
         try {
@@ -71,6 +112,19 @@ export default function URLFixer({
                 .eq('id', id)
 
             if (error) throw error
+
+            // Log activity
+            await supabase.from('activity_log').insert({
+                user_id: user.id,
+                user_email: user.email,
+                action_type: newStatus === 'fixed' ? 'check' : 'uncheck',
+                target_id: id,
+                target_url: targetItem?.url || '',
+                issue_type_id: parseInt(issueTypeId),
+                old_status: currentStatus,
+                new_status: newStatus
+            })
+
             if (onUpdate) onUpdate()
         } catch (error) {
             console.error('Error actualizando:', error)
@@ -83,10 +137,25 @@ export default function URLFixer({
 
     const ignoreUrl = async (id) => {
         setUpdating(id)
+        const targetItem = localUrls.find(u => u.id === id)
+        const oldStatus = targetItem?.status || 'pending'
         setLocalUrls(prev => prev.map(u => u.id === id ? { ...u, status: 'ignored' } : u))
         try {
             const { error } = await supabase.from('audit_urls').update({ status: 'ignored' }).eq('id', id)
             if (error) throw error
+
+            // Log activity
+            await supabase.from('activity_log').insert({
+                user_id: user.id,
+                user_email: user.email,
+                action_type: 'ignore',
+                target_id: id,
+                target_url: targetItem?.url || '',
+                issue_type_id: parseInt(issueTypeId),
+                old_status: oldStatus,
+                new_status: 'ignored'
+            })
+
             if (onUpdate) onUpdate()
         } catch (error) {
             console.error(error)
@@ -98,10 +167,24 @@ export default function URLFixer({
 
     const reactivateUrl = async (id) => {
         setUpdating(id)
+        const targetItem = localUrls.find(u => u.id === id)
         setLocalUrls(prev => prev.map(u => u.id === id ? { ...u, status: 'pending' } : u))
         try {
             const { error } = await supabase.from('audit_urls').update({ status: 'pending' }).eq('id', id)
             if (error) throw error
+
+            // Log activity
+            await supabase.from('activity_log').insert({
+                user_id: user.id,
+                user_email: user.email,
+                action_type: 'reactivate',
+                target_id: id,
+                target_url: targetItem?.url || '',
+                issue_type_id: parseInt(issueTypeId),
+                old_status: 'ignored',
+                new_status: 'pending'
+            })
+
             if (onUpdate) onUpdate()
         } catch (error) {
             console.error(error)
@@ -217,7 +300,7 @@ export default function URLFixer({
             >
                 <div style={{ minWidth: '1200px' }}> {/* Force width to enable scroll */}
                     {localUrls.map((item) => {
-                        const { mainUrl, secondaryUrl, secondaryLabel } = getDisplayValues(item);
+                        const { mainUrl, secondaryUrl, secondaryLabel, isOnPageAudit, pageTitle, metaDescription, h1 } = getDisplayValues(item);
 
                         // Determine Row Style
                         let rowClass = '';
@@ -254,6 +337,42 @@ export default function URLFixer({
                                             <a href={mainUrl} target="_blank" rel="noopener noreferrer" className="text-base font-medium text-blue-400 hover:text-blue-300 hover:underline truncate block max-w-full md:max-w-2xl transition-colors flex items-center gap-1.5">
                                                 {mainUrl} <ExternalLink className="w-3.5 h-3.5 opacity-50" />
                                             </a>
+
+                                            {/* AS/TS Badges for On-Page SEO (Issue Type 16) */}
+                                            {isOnPageAudit && (
+                                                <div className="flex items-center gap-2">
+                                                    {(item.toxicity_score !== null && item.toxicity_score !== undefined) && (
+                                                        (() => {
+                                                            const score = Number(item.toxicity_score);
+                                                            const badgeStyle = score >= 60
+                                                                ? 'bg-red-950/40 border-red-500/30 text-red-300'
+                                                                : score >= 30
+                                                                    ? 'bg-yellow-950/40 border-yellow-500/30 text-yellow-300'
+                                                                    : 'bg-green-950/40 border-green-500/30 text-green-300';
+                                                            return (
+                                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold border ${badgeStyle}`}>
+                                                                    🧪 TS: {score}
+                                                                </span>
+                                                            );
+                                                        })()
+                                                    )}
+                                                    {(item.authority_score !== null && item.authority_score !== undefined) && (
+                                                        (() => {
+                                                            const score = Number(item.authority_score);
+                                                            const badgeStyle = score >= 40
+                                                                ? 'bg-blue-950/40 border-blue-500/30 text-blue-300'
+                                                                : score >= 20
+                                                                    ? 'bg-purple-950/40 border-purple-500/30 text-purple-300'
+                                                                    : 'bg-gray-800/40 border-gray-600/30 text-gray-400';
+                                                            return (
+                                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold border ${badgeStyle}`}>
+                                                                    👑 AS: {score}
+                                                                </span>
+                                                            );
+                                                        })()
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
 
                                         {secondaryUrl && (
@@ -305,6 +424,65 @@ export default function URLFixer({
                                             </div>
                                         )}
 
+                                        {/* On-Page SEO Columns (Issue Type 16) */}
+                                        {isOnPageAudit && (
+                                            <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                {/* Title Column */}
+                                                {(() => {
+                                                    const isDuplicate = duplicates.titles.has((pageTitle || '').trim().toLowerCase());
+                                                    return (
+                                                        <div className={`bg-white/5 border rounded-lg p-3 ${isDuplicate ? 'border-red-500/50 bg-red-950/20' : 'border-white/10'}`}>
+                                                            <span className="text-[10px] uppercase tracking-wide font-bold text-blue-400 block mb-1">
+                                                                📄 Título {isDuplicate && <span className="text-red-400 ml-1" title="Duplicado">💀</span>}
+                                                            </span>
+                                                            <p className={`text-sm ${isDuplicate ? 'text-red-300' : pageTitle.length > 60 ? 'text-orange-300' : 'text-gray-200'}`}>
+                                                                {pageTitle || <span className="text-red-400 italic">Sin título</span>}
+                                                            </p>
+                                                            {pageTitle && (
+                                                                <span className={`text-[10px] mt-1 block ${pageTitle.length > 60 ? 'text-orange-400' : 'text-gray-500'}`}>
+                                                                    {pageTitle.length}/60 chars
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })()}
+
+                                                {/* Meta Description Column */}
+                                                {(() => {
+                                                    const isDuplicate = duplicates.metas.has((metaDescription || '').trim().toLowerCase());
+                                                    return (
+                                                        <div className={`bg-white/5 border rounded-lg p-3 ${isDuplicate ? 'border-red-500/50 bg-red-950/20' : 'border-white/10'}`}>
+                                                            <span className="text-[10px] uppercase tracking-wide font-bold text-purple-400 block mb-1">
+                                                                📝 Meta Descripción {isDuplicate && <span className="text-red-400 ml-1" title="Duplicado">💀</span>}
+                                                            </span>
+                                                            <p className={`text-sm line-clamp-2 ${isDuplicate ? 'text-red-300' : metaDescription.length > 160 ? 'text-orange-300' : 'text-gray-200'}`}>
+                                                                {metaDescription || <span className="text-red-400 italic">Sin meta</span>}
+                                                            </p>
+                                                            {metaDescription && (
+                                                                <span className={`text-[10px] mt-1 block ${metaDescription.length > 160 ? 'text-orange-400' : 'text-gray-500'}`}>
+                                                                    {metaDescription.length}/160 chars
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })()}
+
+                                                {/* H1 Column */}
+                                                {(() => {
+                                                    const isDuplicate = duplicates.h1s.has((h1 || '').trim().toLowerCase());
+                                                    return (
+                                                        <div className={`bg-white/5 border rounded-lg p-3 ${isDuplicate ? 'border-red-500/50 bg-red-950/20' : 'border-white/10'}`}>
+                                                            <span className="text-[10px] uppercase tracking-wide font-bold text-green-400 block mb-1">
+                                                                🏷️ H1 {isDuplicate && <span className="text-red-400 ml-1" title="Duplicado">💀</span>}
+                                                            </span>
+                                                            <p className={`text-sm ${isDuplicate ? 'text-red-300' : 'text-gray-200'}`}>
+                                                                {h1 || <span className="text-red-400 italic">Sin H1</span>}
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
+                                        )}
                                         {item.notes && (
                                             <p className="inline-flex items-center gap-2 text-xs text-yellow-200/80 bg-yellow-500/10 px-3 py-1.5 rounded mt-2 border border-yellow-500/20">
                                                 <AlertTriangle className="w-3 h-3" />
@@ -321,7 +499,7 @@ export default function URLFixer({
                                             <input type="checkbox" className="hidden" checked={item.status === 'fixed'} onChange={() => toggleFix(item.id, item.status)} disabled={updating === item.id || item.status === 'ignored'} />
                                             {item.status === 'fixed' ? <Check className="w-4 h-4 mr-2" /> : <div className="w-4 h-4 mr-2 border-2 border-current rounded-sm" />}
                                             <span className="text-xs font-bold uppercase tracking-wider">
-                                                {item.status === 'fixed' ? 'CORREGIDO' : <><span className="text-sm mr-1">🔧</span> REPARAR</>}
+                                                {item.status === 'fixed' ? 'VISTO' : <><span className="text-sm mr-1">👁️</span> VISTO</>}
                                             </span>
                                         </label>
 

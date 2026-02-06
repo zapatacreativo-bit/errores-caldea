@@ -17,10 +17,26 @@ export default function Home() {
     const [showLoginForm, setShowLoginForm] = useState(false)
     useEffect(() => {
         // Verificar sesión actual
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session)
-            setLoading(false)
-        })
+        // Verificar sesión actual con timeout
+        const checkSession = async () => {
+            try {
+                const timeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Auth timeout')), 3000)
+                )
+                const sessionPromise = supabase.auth.getSession()
+
+                const { data: { session } } = await Promise.race([sessionPromise, timeout])
+
+                setSession(session)
+            } catch (error) {
+                console.warn('Sesión no detectada o timeout. Mostrando login.', error)
+                // Fallback to login screen
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        checkSession()
 
         // Escuchar cambios de autenticación
         const {
@@ -85,7 +101,8 @@ export default function Home() {
             <div className="flex items-center justify-center min-h-screen bg-[#050505]">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Cargando...</p>
+                    <p className="text-gray-400">Iniciando sistema...</p>
+                    <p className="text-xs text-gray-600 mt-2">Si tarda más de 3s, el sistema intentará mostrar el login.</p>
                 </div>
             </div>
         )

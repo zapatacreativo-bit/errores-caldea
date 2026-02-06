@@ -88,17 +88,16 @@ const GlassCard = ({
                 {/* === BACK FACE === */}
                 {backContent && (
                     <div className={cn(
-                        baseGlassStyles,
-                        "absolute inset-0", // Restore absolute positioning for back face
+                        // Remove baseGlassStyles to avoid double background/blur/border
+                        "absolute inset-0 w-full h-full rounded-3xl overflow-hidden",
                         "[transform:rotateY(180deg)]",
-                        "flex items-center justify-center text-center bg-black/60",
+                        "[backface-visibility:hidden]", // Ensure it's hidden when looking at front
+                        "flex items-center justify-center text-center",
+                        "bg-black", // Solid black base to prevent transparency issues
                         !fullBleed && "p-6"
                     )}>
-                        {/* Back Face Decoration */}
-                        <div className="absolute inset-0 bg-gradient-to-tl from-red-600/20 to-transparent opacity-50 pointer-events-none" />
-                        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-red-500/20 rounded-full blur-[80px] pointer-events-none" />
-
-                        <div className="relative z-10 transform translate-z-10 w-full h-full">
+                        {/* Wrapper for content to ensure it sits above background */}
+                        <div className="relative z-10 w-full h-full">
                             {backContent}
                         </div>
                     </div>

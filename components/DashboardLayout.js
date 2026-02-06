@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabaseClient'
 import OnlineUsers from './OnlineUsers'
 import ChatWidget from './ChatWidget'
 import { getRandomQuote } from '../lib/quotes'
-import { Power } from 'lucide-react'
+import { Power, Shield, LayoutDashboard } from 'lucide-react'
 
 export default function DashboardLayout({ children, session }) {
     const router = useRouter()
@@ -18,8 +18,7 @@ export default function DashboardLayout({ children, session }) {
     const handleSignOut = async () => {
         await supabase.auth.signOut()
         router.push('/')
-        // Force reload to clear any state if needed, or rely on router
-        window.location.reload()
+        // window.location.reload() // Potential loop cause disabled
     }
 
     return (
@@ -50,6 +49,10 @@ export default function DashboardLayout({ children, session }) {
                                 </span>
                             </div>
                         </Link>
+                        {/* Online Users Widget (Moved to Left to avoid overlap) */}
+                        <div className="hidden md:block ml-6 pl-6 border-l border-white/10">
+                            <OnlineUsers session={session} />
+                        </div>
                     </div>
 
                     {/* SEO Sage Quote (Persistent) - Marquee Style - Centered Absolute */}
@@ -81,16 +84,29 @@ export default function DashboardLayout({ children, session }) {
                     {/* Right Section: Widgets & User */}
                     <div className="flex items-center gap-6 z-10">
 
-                        {/* Online Users Widget (Persistent) */}
-                        <div className="hidden md:block">
-                            <OnlineUsers session={session} />
-                        </div>
+                        {/* Online Users Widget (Moved to Left) */}
 
                         {/* User Profile & Logout */}
                         <div className="flex items-center gap-4 pl-6 border-l border-white/10">
                             <span className="text-xs text-gray-400 font-medium hidden lg:block">
                                 {session?.user?.email}
                             </span>
+                            {/* Migration Dashboard Link */}
+                            <Link
+                                href="/migration"
+                                className="bg-white/5 hover:bg-orange-500/20 border border-white/10 hover:border-orange-500/50 text-gray-400 hover:text-orange-300 p-2 rounded-lg transition-all duration-300 group hidden sm:block"
+                                title="Panel Migración"
+                            >
+                                <LayoutDashboard className="w-5 h-5 transition-transform group-hover:scale-110" />
+                            </Link>
+                            {/* SuperAdmin Link */}
+                            <Link
+                                href="/superadmin"
+                                className="bg-white/5 hover:bg-purple-500/20 border border-white/10 hover:border-purple-500/50 text-gray-400 hover:text-purple-300 p-2 rounded-lg transition-all duration-300 group hidden sm:block"
+                                title="Panel Admin"
+                            >
+                                <Shield className="w-5 h-5 transition-transform group-hover:scale-110" />
+                            </Link>
                             <button
                                 onClick={handleSignOut}
                                 className="bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 text-gray-400 hover:text-red-300 p-2 rounded-lg transition-all duration-300 group"
