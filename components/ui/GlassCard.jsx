@@ -8,7 +8,9 @@ const GlassCard = ({
     title,
     icon: Icon,
     delay = 0,
-    backContent // New prop for the back of the card
+    backContent, // Prop for the back of the card
+    isFlipped = false, // New prop for manual flip control
+    manualFlip = false  // Set to true to disable hover flip
 }) => {
     // Shared Glass Styles for both Front and Back faces
     const glassStyles = cn(
@@ -16,8 +18,8 @@ const GlassCard = ({
         "bg-gradient-to-br from-white/10 via-white/5 to-transparent",
         "backdrop-blur-3xl border border-white/20",
         "shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]",
-        "p-6", // Added padding to fix content touching borders
-        "[backface-visibility:hidden]" // Critical for 3D flip
+        "p-6",
+        "[backface-visibility:hidden]"
     );
 
     return (
@@ -31,16 +33,18 @@ const GlassCard = ({
                 stiffness: 80,
                 damping: 15
             }}
-            // Apply perspective to the container for 3D effect
             className={cn(
-                "group relative h-48 [perspective:1000px]",
+                "group relative [perspective:1000px]", // Removed fixed h-48
                 className
             )}
         >
             {/* 3D Wrapper that rotates */}
             <div className={cn(
                 "relative h-full w-full transition-all duration-700 [transform-style:preserve-3d]",
-                backContent && "group-hover:[transform:rotateY(180deg)]"
+                // Flip on hover if not manual and backContent exists
+                (!manualFlip && backContent) && "group-hover:[transform:rotateY(180deg)]",
+                // Manual flip control
+                isFlipped && "[transform:rotateY(180deg)]"
             )}>
 
                 {/* === FRONT FACE === */}
@@ -74,7 +78,7 @@ const GlassCard = ({
                     )}
 
                     {/* Content */}
-                    <div className="relative z-10 text-gray-100">
+                    <div className="relative z-10 text-gray-100 h-full">
                         {children}
                     </div>
                 </div>
@@ -84,7 +88,7 @@ const GlassCard = ({
                     <div className={cn(
                         glassStyles,
                         "[transform:rotateY(180deg)]",
-                        "flex items-center justify-center text-center bg-black/60" // Added dark overlay for readability
+                        "flex items-center justify-center text-center bg-black/60"
                     )}>
                         {/* Back Face Decoration */}
                         <div className="absolute inset-0 bg-gradient-to-tl from-red-600/20 to-transparent opacity-50 pointer-events-none" />

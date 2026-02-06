@@ -14,7 +14,7 @@ export default function Home() {
     const [error, setError] = useState(null)
     const [showPassword, setShowPassword] = useState(false)
     const [capsLockActive, setCapsLockActive] = useState(false)
-
+    const [showLoginForm, setShowLoginForm] = useState(false)
     useEffect(() => {
         // Verificar sesión actual
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -95,7 +95,7 @@ export default function Home() {
         return (
             <>
                 <Head>
-                    <title>Login - Auditoría SEO Caldea</title>
+                    <title>Acceso - Auditoría SEO Caldea</title>
                     <meta name="description" content="Sistema de gestión de auditoría SEO" />
                     <meta name="viewport" content="width=device-width, initial-scale=1" />
                 </Head>
@@ -105,88 +105,127 @@ export default function Home() {
                     <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
                     <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
 
-                    <div className="w-full max-w-md relative z-10">
-                        <GlassCard className="p-8">
-                            <div className="text-center mb-8">
-                                <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
-                                    Auditoría SEO Caldea
-                                </h1>
-                                <p className="text-gray-400">
-                                    {isSignUp ? 'Crear nueva cuenta' : 'Inicia sesión para continuar'}
-                                </p>
-                            </div>
+                    <div className="w-full max-w-lg relative z-10">
+                        <GlassCard
+                            className="min-h-[550px]"
+                            isFlipped={showLoginForm}
+                            manualFlip={true}
+                            backContent={
+                                <div className="p-2">
+                                    <div className="text-center mb-6">
+                                        <h2 className="text-2xl font-black text-white uppercase tracking-tight">Acceso Restringido</h2>
+                                        <p className="text-xs text-blue-400 font-bold tracking-widest uppercase mt-1">Protocolo de Auditoría</p>
+                                    </div>
 
-                            <form onSubmit={handleAuth} className="space-y-5">
-                                <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1.5">
-                                        Email
-                                    </label>
-                                    <input
-                                        id="email"
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition outline-none"
-                                        placeholder="tu@email.com"
-                                    />
-                                </div>
+                                    <form onSubmit={handleAuth} className="space-y-4 text-left">
+                                        <div>
+                                            <label htmlFor="email" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">
+                                                Identificador (Email)
+                                            </label>
+                                            <input
+                                                id="email"
+                                                type="email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                required
+                                                className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition outline-none"
+                                                placeholder="user@caldea.com"
+                                            />
+                                        </div>
 
-                                <div>
-                                    <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1.5">
-                                        Contraseña
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            id="password"
-                                            type={showPassword ? 'text' : 'password'}
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            onKeyUp={checkCapsLock}
-                                            required
-                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition outline-none pr-12"
-                                            placeholder="••••••••"
-                                        />
+                                        <div>
+                                            <label htmlFor="password" className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">
+                                                Código de Acceso
+                                            </label>
+                                            <div className="relative">
+                                                <input
+                                                    id="password"
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    value={password}
+                                                    onChange={(e) => setPassword(e.target.value)}
+                                                    onKeyUp={checkCapsLock}
+                                                    required
+                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition outline-none pr-12"
+                                                    placeholder="••••••••"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-white transition-colors"
+                                                >
+                                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
+                                            {capsLockActive && (
+                                                <div className="mt-2 flex items-center gap-1.5 text-amber-500 text-[10px] font-bold uppercase tracking-wider">
+                                                    <AlertCircle size={12} />
+                                                    BLOQUEO DE MAYÚSCULAS ACTIVO
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {error && (
+                                            <div className="bg-red-500/10 border border-red-500/30 text-red-200 p-3 rounded-xl text-xs font-medium flex items-start gap-2 animate-pulse">
+                                                <AlertCircle size={16} className="shrink-0" />
+                                                {error}
+                                            </div>
+                                        )}
+
                                         <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-500 hover:text-white transition-colors"
+                                            type="submit"
+                                            className="w-full bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white font-black py-4 rounded-xl transition-all duration-300 shadow-[0_0_25px_rgba(37,99,235,0.4)] uppercase tracking-widest text-sm"
                                         >
-                                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                            {isSignUp ? 'Generar Credenciales' : 'Validar Identidad'}
+                                        </button>
+                                    </form>
+
+                                    <div className="mt-6 text-center border-t border-white/5 pt-4">
+                                        <button
+                                            onClick={() => setIsSignUp(!isSignUp)}
+                                            className="text-[10px] text-gray-500 hover:text-white font-bold uppercase tracking-widest transition-colors"
+                                        >
+                                            {isSignUp
+                                                ? '¿Ya tienes acceso? Volver al Login'
+                                                : '¿Sin credenciales? Solicitar Registro'}
                                         </button>
                                     </div>
-                                    {capsLockActive && (
-                                        <div className="mt-2 flex items-center gap-1.5 text-amber-400 text-xs font-medium">
-                                            <AlertCircle size={14} />
-                                            Bloqueo de Mayúsculas activado
-                                        </div>
-                                    )}
+
+                                    <button
+                                        onClick={() => setShowLoginForm(false)}
+                                        className="mt-4 text-[10px] text-blue-400 hover:text-blue-300 font-bold uppercase tracking-widest"
+                                    >
+                                        ← Regresar
+                                    </button>
                                 </div>
-
-                                {error && (
-                                    <div className="bg-red-500/10 border border-red-500/20 text-red-200 px-4 py-3 rounded-xl text-sm backdrop-blur-sm flex items-start gap-2">
-                                        <AlertCircle size={18} className="shrink-0 mt-0.5" />
-                                        {error}
+                            }
+                        >
+                            <div className="h-full flex flex-col items-center justify-center text-center">
+                                <div className="mb-8 p-6 rounded-full bg-blue-600/10 border border-blue-500/20 shadow-[0_0_50px_rgba(59,130,246,0.1)] relative group">
+                                    <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
+                                    <div className="w-24 h-24 rounded-full border-4 border-blue-500/30 flex items-center justify-center relative z-10">
+                                        <span className="text-3xl font-black text-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">SEO</span>
                                     </div>
-                                )}
+                                </div>
+                                <h1 className="text-4xl font-black text-white mb-3 tracking-tighter uppercase italic">
+                                    Caldea<span className="text-blue-500">Audit</span>
+                                </h1>
+                                <p className="text-gray-400 font-bold tracking-[0.3em] uppercase text-[10px] mb-12 opacity-60">
+                                    System Management Protocol v1.4
+                                </p>
 
                                 <button
-                                    type="submit"
-                                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] transform hover:-translate-y-0.5"
+                                    onClick={() => setShowLoginForm(true)}
+                                    className="group relative px-10 py-5 bg-white/5 border border-white/10 rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105 hover:bg-white/10 hover:border-white/20 active:scale-95"
                                 >
-                                    {isSignUp ? 'Registrarse' : 'Iniciar Sesión'}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/10 to-blue-600/0 -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
+                                    <span className="relative z-10 text-white font-black tracking-[0.2em] uppercase text-sm">
+                                        Entrar al Sistema
+                                    </span>
                                 </button>
-                            </form>
 
-                            <div className="mt-8 text-center border-t border-white/10 pt-6">
-                                <button
-                                    onClick={() => setIsSignUp(!isSignUp)}
-                                    className="text-sm text-gray-400 hover:text-white font-medium transition-colors"
-                                >
-                                    {isSignUp
-                                        ? '¿Ya tienes cuenta? Inicia sesión'
-                                        : '¿No tienes cuenta? Regístrate'}
-                                </button>
+                                <p className="mt-8 text-[9px] text-gray-500 uppercase tracking-widest font-bold opacity-40">
+                                    Secure Access Terminal • 2026 Nexus AI
+                                </p>
                             </div>
                         </GlassCard>
                     </div>

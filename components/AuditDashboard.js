@@ -122,7 +122,7 @@ export default function AuditDashboard({ session }) {
                 <GlassCard
                     title="Prioridad Alta"
                     icon={AlertOctagon}
-                    className="border-l-4 border-l-red-500 bg-red-500/5"
+                    className="border-l-4 border-l-red-500 bg-red-500/5 h-48"
                     delay={0.1}
                     backContent={
                         <div className="text-center">
@@ -138,7 +138,7 @@ export default function AuditDashboard({ session }) {
                 <GlassCard
                     title="Prioridad Media"
                     icon={AlertTriangle}
-                    className="border-l-4 border-l-yellow-500 bg-yellow-500/5"
+                    className="border-l-4 border-l-yellow-500 bg-yellow-500/5 h-48"
                     delay={0.2}
                     backContent={
                         <div className="text-center">
@@ -154,7 +154,7 @@ export default function AuditDashboard({ session }) {
                 <GlassCard
                     title="Prioridad Baja"
                     icon={Activity}
-                    className="border-l-4 border-l-blue-500 bg-blue-500/5"
+                    className="border-l-4 border-l-blue-500 bg-blue-500/5 h-48"
                     delay={0.3}
                     backContent={
                         <div className="text-center">
@@ -170,7 +170,7 @@ export default function AuditDashboard({ session }) {
                 <GlassCard
                     title="Progreso Global"
                     icon={CheckCircle}
-                    className="border-l-4 border-l-green-500 bg-green-500/5"
+                    className="border-l-4 border-l-green-500 bg-green-500/5 h-48"
                     delay={0.4}
                     backContent={
                         <div className="text-center">
@@ -297,9 +297,8 @@ export default function AuditDashboard({ session }) {
                         </div>
                     )
                 }
-            </div >
-            {/* Chat Widget */}
-            < ChatWidget session={session} />
-        </div >
+            </div>
+            <ChatWidget session={session} />
+        </div>
     )
 }
