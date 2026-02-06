@@ -96,9 +96,20 @@ export default function AuditDashboard({ session }) {
                     className="border-l-4 border-l-red-500 bg-red-500/5 h-48"
                     delay={0.1}
                     backContent={
-                        <div className="text-center">
-                            <h4 className="text-xl font-black text-red-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">¡ESTO ES ESPARTA!</h4>
-                            <p className="text-sm text-gray-300 font-medium">Sin piedad con los errores críticos.</p>
+                        <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
+                            {/* Leonidas Easter Egg Background */}
+                            <div
+                                className="absolute inset-0 z-0 opacity-20 bg-cover bg-center bg-no-repeat transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125 pointer-events-none"
+                                style={{ backgroundImage: "url('/leonidas.png')" }}
+                            >
+                                <div className="absolute inset-0 bg-red-900/40 mix-blend-overlay"></div>
+                            </div>
+
+                            {/* Text Content */}
+                            <div className="text-center relative z-10">
+                                <h4 className="text-xl font-black text-red-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-[pulse_3s_infinite]">¡ESTO ES ESPARTA!</h4>
+                                <p className="text-sm text-gray-300 font-medium drop-shadow-md">Sin piedad con los errores críticos.</p>
+                            </div>
                         </div>
                     }
                 >
