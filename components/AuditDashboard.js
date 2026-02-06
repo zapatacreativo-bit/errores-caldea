@@ -99,10 +99,10 @@ export default function AuditDashboard({ session }) {
                         <div className="relative w-[calc(100%+3rem)] h-[calc(100%+3rem)] -m-6 flex flex-col items-center justify-center overflow-hidden">
                             {/* Leonidas Easter Egg Background */}
                             <div
-                                className="absolute inset-0 z-0 opacity-20 bg-cover bg-center bg-no-repeat transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125 pointer-events-none"
+                                className="absolute inset-0 z-0 opacity-40 bg-cover bg-center bg-no-repeat transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125 pointer-events-none"
                                 style={{ backgroundImage: "url('/leonidas.png')" }}
                             >
-                                <div className="absolute inset-0 bg-red-900/40 mix-blend-overlay"></div>
+                                <div className="absolute inset-0 bg-red-900/30"></div>
                             </div>
 
                             {/* Text Content */}
