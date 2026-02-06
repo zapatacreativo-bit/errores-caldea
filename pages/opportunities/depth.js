@@ -9,24 +9,42 @@ export default function DepthPage() {
             title="Optimizar Profundidad (Click Depth)"
             description="Páginas que están a más de 3 clics de la home. Son difíciles de encontrar para el usuario y para el bot de Google. Si son importantes, súbelas en la arquitectura."
             icon={Layers}
-            fetchDataFn={async ({ page, itemsPerPage, search }) => {
+            fetchDataFn={async ({ page, itemsPerPage, search, sortConfig }) => {
                 let query = supabase
                     .from('audit_urls')
                     .select('*', { count: 'exact' })
                     .gt('depth_level', 3)
-                    .order('depth_level', { ascending: false })
-                    .range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
 
                 if (search) {
                     query = query.ilike('url', `%${search}%`)
                 }
 
+                // Apply sorting
+                if (sortConfig && sortConfig.key) {
+                    query = query.order(sortConfig.key, { ascending: sortConfig.direction === 'asc' })
+                } else {
+                    query = query.order('depth_level', { ascending: false })
+                }
+
+                query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
+
                 return await query
             }}
             columns={[
                 {
-                    header: 'Nivel Profundidad',
+                    header: '% Tráfico',
+                    sortKey: 'traffic_percentage',
                     render: (row) => (
+                        <span className="text-blue-200 text-xs font-mono font-bold">
+                            {row.traffic_percentage ? `${row.traffic_percentage}%` : '-'}
+                        </span>
+                    )
+                },
+                {
+                    header: 'Profundidad',
+                    sortKey: 'depth_level',
+                    render: (row) => (
+
                         <div className="flex justify-center">
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">
                                 {row.depth_level} clicks

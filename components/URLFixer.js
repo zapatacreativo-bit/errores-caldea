@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { Check, X, RefreshCw, ExternalLink, AlertTriangle, ArrowUp, ArrowDown } from 'lucide-react'
+import { Check, X, RefreshCw, ExternalLink, AlertTriangle, ArrowUp, ArrowDown, Zap } from 'lucide-react'
 
 export default function URLFixer({
     urls,
@@ -85,6 +85,16 @@ export default function URLFixer({
                 secondaryUrl: item.url,
                 secondaryLabel: 'Encontrado en (Origen):',
                 isOnPageAudit: false
+            };
+        }
+        // Issue Type 7: Duplicate Titles
+        if (parseInt(issueTypeId) === 7) {
+            return {
+                mainUrl: item.url,
+                secondaryUrl: item.linked_from,
+                secondaryLabel: 'Encontrado en:',
+                isOnPageAudit: false,
+                pageTitle: item.page_title
             };
         }
         return {
@@ -239,16 +249,23 @@ export default function URLFixer({
 
                 {/* Filtros */}
                 <div className="flex gap-4 flex-wrap bg-black/30 p-2 rounded-xl border border-white/5">
-                    {['all', 'pending', 'fixed', 'ignored'].map(f => (
+                    {['all', 'critical', 'high', 'medium', 'low', 'pending', 'fixed', 'ignored'].map(f => (
                         <button
                             key={f}
                             onClick={() => onFilterChange(f)}
-                            className={`mx-1 px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${filter === f
+                            className={`mx-1 px-3 py-1.5 rounded-lg text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${filter === f
                                 ? 'bg-blue-600 text-white shadow-lg scale-105'
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
-                            {f === 'all' ? 'Todos' : f === 'fixed' ? 'Corregidos' : f === 'pending' ? 'Pendientes' : 'Ignorados'}
+                            {f === 'all' ? 'Todos' :
+                                f === 'critical' ? '⚡ Críticos' :
+                                    f === 'high' ? '🔥 Altos' :
+                                        f === 'medium' ? '🔵 Medios' :
+                                            f === 'low' ? '⚪ Bajos' :
+                                                f === 'fixed' ? '✅ Listos' :
+                                                    f === 'pending' ? '⏳ Pendientes' :
+                                                        '🚫 Ignorados'}
                         </button>
                     ))}
                 </div>
@@ -334,9 +351,21 @@ export default function URLFixer({
                                 <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center flex-wrap gap-3 mb-1">
-                                            <a href={mainUrl} target="_blank" rel="noopener noreferrer" className="text-base font-medium text-blue-400 hover:text-blue-300 hover:underline truncate block max-w-full md:max-w-2xl transition-colors flex items-center gap-1.5">
+                                            <a href={mainUrl} target="_blank" rel="noopener noreferrer" className="text-base font-medium text-blue-400 hover:text-blue-300 hover:underline truncate block max-w-full md:max-w-xl transition-colors flex items-center gap-1.5">
                                                 {mainUrl} <ExternalLink className="w-3.5 h-3.5 opacity-50" />
                                             </a>
+
+                                            {/* PRIORITY BADGE */}
+                                            {item.priority && (
+                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest border ${item.priority === 'critical' ? 'bg-red-600 text-white border-red-400 shadow-[0_0_10px_rgba(220,38,38,0.5)] animate-pulse' :
+                                                    item.priority === 'high' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' :
+                                                        item.priority === 'medium' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
+                                                            'bg-gray-500/20 text-gray-400 border-gray-500/30'
+                                                    }`}>
+                                                    {item.priority === 'critical' && <Zap size={10} fill="currentColor" />}
+                                                    {item.priority}
+                                                </span>
+                                            )}
 
                                             {/* AS/TS Badges for On-Page SEO (Issue Type 16) */}
                                             {isOnPageAudit && (
@@ -374,6 +403,13 @@ export default function URLFixer({
                                                 </div>
                                             )}
                                         </div>
+
+                                        {/* Display Duplicate Title (Issue 7) */}
+                                        {parseInt(issueTypeId) === 7 && pageTitle && (
+                                            <p className="text-xs text-orange-200/70 mb-2 font-mono break-all pl-1 border-l-2 border-orange-500/20">
+                                                Duplicate Title: "{pageTitle}"
+                                            </p>
+                                        )}
 
                                         {secondaryUrl && (
                                             <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">

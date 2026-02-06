@@ -9,30 +9,48 @@ export default function ContentPage() {
             title="Enriquecer Contenido (Thin Content)"
             description="Páginas con menos de 300 palabras. El contenido pobre no posiciona y puede afectar a la calidad global del dominio. ¡Dales 'chicha' o elimínalas!"
             icon={FileText}
-            fetchDataFn={async ({ page, itemsPerPage, search }) => {
+            fetchDataFn={async ({ page, itemsPerPage, search, sortConfig }) => {
                 let query = supabase
                     .from('audit_urls')
                     .select('*', { count: 'exact' })
                     .lt('word_count', 300)
-                    .gt('word_count', 0) // Exclude 0 (redirects/errors usually)
-                    .eq('status_code', 200) // Only valid pages
-                    .order('word_count', { ascending: true })
-                    .range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
+                    .eq('indexability', 'Indexable') // Only indexable thin content matters most
 
                 if (search) {
                     query = query.ilike('url', `%${search}%`)
                 }
 
+                // Apply sorting
+                if (sortConfig && sortConfig.key) {
+                    // Handle special logic if needed or direct mapping
+                    query = query.order(sortConfig.key, { ascending: sortConfig.direction === 'asc' })
+                } else {
+                    query = query.order('word_count', { ascending: true })
+                }
+
+                query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
+
                 return await query
             }}
             columns={[
                 {
+                    header: '% Tráfico',
+                    sortKey: 'traffic_percentage',
+                    render: (row) => (
+                        <span className="text-blue-200 text-xs font-mono font-bold">
+                            {row.traffic_percentage ? `${row.traffic_percentage}%` : '-'}
+                        </span>
+                    )
+                },
+                {
                     header: 'Palabras',
+                    sortKey: 'word_count',
                     render: (row) => (
                         <div className="flex justify-center">
+
                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${row.word_count < 100
-                                    ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                                    : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                                ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
                                 }`}>
                                 {row.word_count} palabras
                             </span>

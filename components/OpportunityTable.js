@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import {
     ArrowRight, ExternalLink, Search, Filter,
-    CheckCircle2, AlertCircle, RefreshCw, X
+    CheckCircle2, AlertCircle, RefreshCw, X,
+    ArrowUp, ArrowDown, ArrowUpDown
 } from 'lucide-react'
+
 
 export default function OpportunityTable({
     title,
@@ -18,12 +20,13 @@ export default function OpportunityTable({
     const [total, setTotal] = useState(0)
     const [search, setSearch] = useState('')
     const [updating, setUpdating] = useState(null)
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
 
     const ITEMS_PER_PAGE = 20
 
     useEffect(() => {
         loadData()
-    }, [page, search])
+    }, [page, search, sortConfig])
 
     const loadData = async () => {
         setLoading(true)
@@ -31,7 +34,8 @@ export default function OpportunityTable({
             const { data, count } = await fetchDataFn({
                 page,
                 itemsPerPage: ITEMS_PER_PAGE,
-                search
+                search,
+                sortConfig
             })
             setUrls(data || [])
             setTotal(count || 0)
@@ -39,6 +43,15 @@ export default function OpportunityTable({
             console.error('Error loading data:', error)
         }
         setLoading(false)
+    }
+
+    const handleSort = (key) => {
+        if (!key) return
+        setSortConfig(current => ({
+            key,
+            direction: current.key === key && current.direction === 'asc' ? 'desc' : 'asc'
+        }))
+        setPage(1) // Reset to first page
     }
 
     const toggleStatus = async (id, currentStatus) => {
@@ -100,9 +113,36 @@ export default function OpportunityTable({
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-black/20 border-b border-white/10 text-xs uppercase text-gray-400">
-                                <th className="p-5 w-1/2">URL / Página</th>
+                                <th
+                                    className="p-5 w-1/2 cursor-pointer hover:text-white transition-colors group select-none"
+                                    onClick={() => handleSort('url')}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        URL / Página
+                                        {sortConfig.key === 'url' ? (
+                                            sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />
+                                        ) : (
+                                            <ArrowUpDown className="w-3 h-3 opacity-30 group-hover:opacity-100" />
+                                        )}
+                                    </div>
+                                </th>
                                 {columns.map((col, idx) => (
-                                    <th key={idx} className="p-5 text-center">{col.header}</th>
+                                    <th
+                                        key={idx}
+                                        className={`p-5 text-center select-none ${col.sortKey ? 'cursor-pointer hover:text-white transition-colors group' : ''}`}
+                                        onClick={() => col.sortKey && handleSort(col.sortKey)}
+                                    >
+                                        <div className="flex items-center justify-center gap-2">
+                                            {col.header}
+                                            {col.sortKey && (
+                                                sortConfig.key === col.sortKey ? (
+                                                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-blue-400" /> : <ArrowDown className="w-3 h-3 text-blue-400" />
+                                                ) : (
+                                                    <ArrowUpDown className="w-3 h-3 opacity-30 group-hover:opacity-100" />
+                                                )
+                                            )}
+                                        </div>
+                                    </th>
                                 ))}
                                 <th className="p-5 text-center">Estado</th>
                             </tr>
@@ -154,8 +194,8 @@ export default function OpportunityTable({
                                                 onClick={() => toggleStatus(url.id, url.status)}
                                                 disabled={updating === url.id}
                                                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${url.status === 'fixed'
-                                                        ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
+                                                    ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                                    : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
                                                     }`}
                                             >
                                                 {updating === url.id ? (

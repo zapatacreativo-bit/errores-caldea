@@ -30,13 +30,17 @@ WHERE url = 'https://www.caldea.com/reserva-ahora';
 -- 🚀 MEJORA DEL ALGORITMO DE PRIORIDADES (Ejecutar después de cargar datos)
 -- ========================================================================
 
--- 1. CRÍTICO: Páginas con muchos enlaces internos (Estructura Core)
+-- 1. CRÍTICO: Páginas con alto tráfico o estructura core
 UPDATE audit_urls SET priority = 'critical'
-WHERE internal_links_count >= 100 OR depth_level = 0;
+WHERE traffic_percentage > 5 
+   OR internal_links_count >= 100 
+   OR depth_level = 0;
 
--- 2. ALTO: Páginas con buen enlazado o nivel 1
+-- 2. ALTO: Páginas con tráfico moderado o buen enlazado
 UPDATE audit_urls SET priority = 'high'
-WHERE (internal_links_count BETWEEN 50 AND 99 OR depth_level = 1)
+WHERE (traffic_percentage BETWEEN 1 AND 5
+   OR internal_links_count BETWEEN 50 AND 99 
+   OR depth_level = 1)
 AND priority != 'critical';
 
 -- 3. BAJO: Thin content o muy profundas

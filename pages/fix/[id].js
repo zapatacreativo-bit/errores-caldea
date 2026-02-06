@@ -63,7 +63,11 @@ export default function FixPage() {
                 .eq('issue_type_id', id)
 
             if (currentFilter !== 'all') {
-                countQuery = countQuery.eq('status', currentFilter)
+                if (['critical', 'high', 'medium', 'low'].includes(currentFilter)) {
+                    countQuery = countQuery.eq('priority', currentFilter)
+                } else {
+                    countQuery = countQuery.eq('status', currentFilter)
+                }
             }
 
             const { count, error: countError } = await countQuery
@@ -87,7 +91,11 @@ export default function FixPage() {
             }
 
             if (currentFilter !== 'all') {
-                dataQuery = dataQuery.eq('status', currentFilter)
+                if (['critical', 'high', 'medium', 'low'].includes(currentFilter)) {
+                    dataQuery = dataQuery.eq('priority', currentFilter)
+                } else {
+                    dataQuery = dataQuery.eq('status', currentFilter)
+                }
             }
 
             const from = (pageNum - 1) * ITEMS_PER_PAGE
