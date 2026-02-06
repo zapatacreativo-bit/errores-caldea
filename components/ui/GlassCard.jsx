@@ -11,6 +11,7 @@ const GlassCard = ({
     backContent, // Prop for the back of the card
     isFlipped = false, // New prop for manual flip control
     manualFlip = false,  // Set to true to disable hover flip
+    fullBleed = false, // Enable full bleed for back content
     ...props
 }) => {
     // Shared Glass Styles for both Front and Back faces
@@ -19,7 +20,6 @@ const GlassCard = ({
         "bg-gradient-to-br from-white/10 via-white/5 to-transparent",
         "backdrop-blur-3xl border border-white/20",
         "shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]",
-        "p-6",
         "[backface-visibility:hidden]"
     );
 
@@ -50,7 +50,7 @@ const GlassCard = ({
             )}>
 
                 {/* === FRONT FACE === */}
-                <div className={cn(baseGlassStyles, "relative z-10")}>
+                <div className={cn(baseGlassStyles, "relative z-10 p-6")}>
                     {/* Dynamic Glass Reflection */}
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
@@ -91,7 +91,8 @@ const GlassCard = ({
                         baseGlassStyles,
                         "absolute inset-0", // Restore absolute positioning for back face
                         "[transform:rotateY(180deg)]",
-                        "flex items-center justify-center text-center bg-black/60"
+                        "flex items-center justify-center text-center bg-black/60",
+                        !fullBleed && "p-6"
                     )}>
                         {/* Back Face Decoration */}
                         <div className="absolute inset-0 bg-gradient-to-tl from-red-600/20 to-transparent opacity-50 pointer-events-none" />

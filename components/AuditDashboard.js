@@ -95,15 +95,17 @@ export default function AuditDashboard({ session }) {
                     icon={AlertOctagon}
                     className="border-l-4 border-l-red-500 bg-red-500/5 h-48"
                     delay={0.1}
+                    fullBleed={true}
                     backContent={
-                        <div className="relative w-[calc(100%+3rem)] h-[calc(100%+3rem)] -m-6 flex flex-col items-center justify-center overflow-hidden">
+                        <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
                             {/* Leonidas Easter Egg Background */}
-                            <div
-                                className="absolute inset-0 z-0 opacity-40 bg-cover bg-center bg-no-repeat transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125 pointer-events-none"
-                                style={{ backgroundImage: "url('/leonidas.png')" }}
-                            >
-                                <div className="absolute inset-0 bg-red-900/30"></div>
-                            </div>
+                            <img
+                                src="/leonidas.png"
+                                alt="Leonidas"
+                                className="absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                            />
+                            {/* Dark Overlay for Text Readability */}
+                            <div className="absolute inset-0 bg-black/20" />
 
                             {/* Text Content */}
                             <div className="text-center relative z-10 p-6">
