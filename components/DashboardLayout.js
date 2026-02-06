@@ -84,42 +84,46 @@ export default function DashboardLayout({ children, session }) {
                     </div>
 
                     {/* Right Section: Widgets & User */}
-                    <div className="flex items-center gap-6 z-10">
+                    <div className="flex flex-col items-end justify-center gap-1 z-10 pl-6 border-l border-white/10">
 
-                        {/* Retro Clock Widget */}
-                        <div className="hidden lg:block">
-                            <RetroClock />
-                        </div>
-
-                        {/* User Profile & Logout */}
-                        <div className="flex items-center gap-4 pl-6 border-l border-white/10">
-                            <span className="text-xs text-gray-400 font-medium hidden lg:block">
+                        {/* User Profile & Actions Row */}
+                        <div className="flex items-center gap-3">
+                            <span className="text-[10px] text-gray-400 font-medium hidden lg:block mr-2">
                                 {session?.user?.email}
                             </span>
+
                             {/* Migration Dashboard Link */}
                             <Link
                                 href="/migration"
-                                className="bg-white/5 hover:bg-orange-500/20 border border-white/10 hover:border-orange-500/50 text-gray-400 hover:text-orange-300 p-2 rounded-lg transition-all duration-300 group hidden sm:block"
+                                className="bg-white/5 hover:bg-orange-500/20 border border-white/10 hover:border-orange-500/50 text-gray-400 hover:text-orange-300 p-1.5 rounded-lg transition-all duration-300 group hidden sm:block"
                                 title="Panel Migración"
                             >
-                                <LayoutDashboard className="w-5 h-5 transition-transform group-hover:scale-110" />
+                                <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110" />
                             </Link>
+
                             {/* SuperAdmin Link */}
                             <Link
                                 href="/superadmin"
-                                className="bg-white/5 hover:bg-purple-500/20 border border-white/10 hover:border-purple-500/50 text-gray-400 hover:text-purple-300 p-2 rounded-lg transition-all duration-300 group hidden sm:block"
+                                className="bg-white/5 hover:bg-purple-500/20 border border-white/10 hover:border-purple-500/50 text-gray-400 hover:text-purple-300 p-1.5 rounded-lg transition-all duration-300 group hidden sm:block"
                                 title="Panel Admin"
                             >
-                                <Shield className="w-5 h-5 transition-transform group-hover:scale-110" />
+                                <Shield className="w-4 h-4 transition-transform group-hover:scale-110" />
                             </Link>
+
                             <button
                                 onClick={handleSignOut}
-                                className="bg-green-500/10 text-green-400 border border-green-500/30 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-300 p-2 rounded-lg transition-all duration-300 group shadow-[0_0_10px_rgba(34,197,94,0.2)] hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
+                                className="bg-green-500/10 text-green-400 border border-green-500/30 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-300 p-1.5 rounded-lg transition-all duration-300 group shadow-[0_0_10px_rgba(34,197,94,0.2)] hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
                                 title="Cerrar Sesión"
                             >
-                                <Power className="w-5 h-5 transition-transform group-hover:scale-110" />
+                                <Power className="w-4 h-4 transition-transform group-hover:scale-110" />
                             </button>
                         </div>
+
+                        {/* Retro Clock Widget - Beneath icons, Right Aligned */}
+                        <div className="hidden lg:block -mt-0.5">
+                            <RetroClock />
+                        </div>
+
                     </div>
                 </div>
             </header>

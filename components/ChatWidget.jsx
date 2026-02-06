@@ -117,7 +117,7 @@ export default function ChatWidget({ session }) {
                             <MessageSquare className="w-5 h-5 text-blue-400" />
                             <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                         </div>
-                        <h3 className="font-bold text-white tracking-wide">Sala de Chat</h3>
+                        <h3 className="font-bold text-white tracking-wide">Cuaderno de Bitácoras</h3>
                     </div>
                     <div className="flex items-center gap-1">
                         <button
@@ -139,7 +139,7 @@ export default function ChatWidget({ session }) {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                     {messages.length === 0 ? (
                         <div className="text-center text-gray-500 text-sm py-10 italic">
-                            No hay mensajes aún.<br />¡Sé el primero en escribir! 👋
+                            Bitácora vacía.<br />Registra el primer evento. 🚀
                         </div>
                     ) : (
                         messages.map((msg) => {
@@ -176,7 +176,7 @@ export default function ChatWidget({ session }) {
                         type="text"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Escribe un mensaje..."
+                        placeholder="Nueva entrada en bitácora..."
                         className="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:bg-black/50 transition-all placeholder:text-gray-500"
                     />
                     <button
@@ -210,7 +210,7 @@ export default function ChatWidget({ session }) {
 
                     {/* Tooltip */}
                     <span className="absolute right-full mr-4 bg-white/10 backdrop-blur px-3 py-1.5 rounded-lg text-sm text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10">
-                        Chat Interno
+                        Cuaderno de Bitácoras
                     </span>
                 </button>
             )}
