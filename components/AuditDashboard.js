@@ -4,7 +4,6 @@ import Link from 'next/link'
 import GlassCard from './ui/GlassCard'
 import OnlineUsers from './OnlineUsers'
 import ChatWidget from './ChatWidget' // Import ChatWidget
-import { getRandomQuote } from '../lib/quotes'
 import { Activity, CheckCircle, AlertTriangle, AlertOctagon } from 'lucide-react'
 
 export default function AuditDashboard({ session }) {
@@ -19,11 +18,9 @@ export default function AuditDashboard({ session }) {
     })
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState('all') // all, High, Medium, Low
-    const [quote, setQuote] = useState("Cargando dosis de realidad...")
 
     useEffect(() => {
         fetchIssues()
-        setQuote(getRandomQuote())
     }, [])
 
     // ... fetchIssues logic remains ...
@@ -80,40 +77,14 @@ export default function AuditDashboard({ session }) {
     }
 
     return (
-        <div className="container mx-auto p-6 min-h-screen text-gray-100">
-            {/* Header */}
+        <div className="container mx-auto p-6 min-h-screen text-gray-100 pb-24">
+            {/* Header / Intro */}
             <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-start md:items-center gap-6 flex-col md:flex-row">
-                    {/* Partner Logo */}
-                    {/* Partner Logo - Transparent & Larger */}
-                    <div className="relative group py-2">
-                        <div className="absolute inset-0 bg-red-600/5 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
-                        <img
-                            src="/logo-seo-madrid.png"
-                            alt="SEO MADRID"
-                            className="relative h-28 w-auto object-contain transition-all duration-300 transform group-hover:scale-105 drop-shadow-[0_0_10px_rgba(255,255,255,0.15)]"
-                        />
-                    </div>
-
                     <div>
-                        <h1 className="text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-md">Auditoría SEO Caldea<span className="text-blue-400">.com</span></h1>
-                        <p className="text-gray-400 font-medium">Dashboard de seguimiento y corrección de errores</p>
+                        <h1 className="text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-md">Panel de Control</h1>
+                        <p className="text-gray-400 font-medium">Estado actual de la auditoría y correcciones.</p>
                     </div>
-                    {/* Real-Time Users Widget */}
-                    <div className="hidden md:block">
-                        <OnlineUsers session={session} />
-                    </div>
-                </div>
-
-                {/* Motivation Widget */}
-                <div className="hidden md:block max-w-md">
-                    <p className="text-sm text-right text-gray-300 italic font-mono opacity-90 leading-relaxed bg-white/5 p-3 rounded-lg border border-white/5 shadow-inner">
-                        "{quote}"
-                        <br />
-                        <span className="text-blue-400 font-semibold not-italic text-xs mt-1 block tracking-wide">
-                            Consejo de Sabios...🎲
-                        </span>
-                    </p>
                 </div>
             </div>
 
@@ -298,7 +269,7 @@ export default function AuditDashboard({ session }) {
                     )
                 }
             </div>
-            <ChatWidget session={session} />
+            {/* Chat Widget removed from here - now in Global Layout */}
         </div>
     )
 }

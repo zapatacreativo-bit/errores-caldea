@@ -14,8 +14,8 @@ const GlassCard = ({
     ...props
 }) => {
     // Shared Glass Styles for both Front and Back faces
-    const glassStyles = cn(
-        "absolute inset-0 h-full w-full rounded-3xl overflow-hidden",
+    const baseGlassStyles = cn(
+        "w-full h-full rounded-3xl overflow-hidden",
         "bg-gradient-to-br from-white/10 via-white/5 to-transparent",
         "backdrop-blur-3xl border border-white/20",
         "shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]",
@@ -36,7 +36,7 @@ const GlassCard = ({
                 damping: 15
             }}
             className={cn(
-                "group relative [perspective:1000px]", // Removed fixed h-48
+                "group relative [perspective:1000px]",
                 className
             )}
         >
@@ -50,7 +50,7 @@ const GlassCard = ({
             )}>
 
                 {/* === FRONT FACE === */}
-                <div className={glassStyles}>
+                <div className={cn(baseGlassStyles, "relative z-10")}>
                     {/* Dynamic Glass Reflection */}
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
@@ -88,7 +88,8 @@ const GlassCard = ({
                 {/* === BACK FACE === */}
                 {backContent && (
                     <div className={cn(
-                        glassStyles,
+                        baseGlassStyles,
+                        "absolute inset-0", // Restore absolute positioning for back face
                         "[transform:rotateY(180deg)]",
                         "flex items-center justify-center text-center bg-black/60"
                     )}>

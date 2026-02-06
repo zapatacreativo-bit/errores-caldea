@@ -201,40 +201,8 @@ export default function Home() {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
             </Head>
 
-            <div className="min-h-screen text-gray-200 relative">
-                {/* Background Ethereal Elements for Dashboard */}
-                <div className="absolute top-[-20%] left-[20%] w-[60%] h-[60%] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none" />
-
-                {/* Header */}
-                <header className="bg-black/20 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
-                    <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            {/* Migration Ring/Logo Placeholder */}
-                            <div className="w-8 h-8 rounded-full border-2 border-blue-500 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-                                <span className="text-xs font-bold text-blue-400">SEO</span>
-                            </div>
-                            <div>
-                                <h1 className="text-lg font-bold text-white leading-tight">Caldea Audit</h1>
-                                <p className="text-[10px] text-blue-400 uppercase tracking-wider">Migration Protocol</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-6">
-                            <span className="text-sm text-gray-400 font-medium hidden sm:block">
-                                {session.user.email}
-                            </span>
-                            <button
-                                onClick={handleSignOut}
-                                className="bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:text-white"
-                            >
-                                Cerrar Sesión
-                            </button>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Dashboard */}
-                <AuditDashboard session={session} />
-            </div>
+            {/* Dashboard content only - Layout provided by _app.js */}
+            <AuditDashboard session={session} />
         </>
     )
 }
