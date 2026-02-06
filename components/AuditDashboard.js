@@ -124,10 +124,20 @@ export default function AuditDashboard({ session }) {
                     icon={AlertTriangle}
                     className="border-l-4 border-l-yellow-500 bg-yellow-500/5 h-48"
                     delay={0.2}
+                    fullBleed={true}
                     backContent={
-                        <div className="text-center">
-                            <h4 className="text-xl font-black text-yellow-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]">¡HOLD!</h4>
-                            <p className="text-sm text-gray-300 font-medium">Mantén la línea, corrígelos todos.</p>
+                        <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
+                            {/* Braveheart Easter Egg */}
+                            <img
+                                src="/braveheart.png"
+                                alt="Hold"
+                                className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                            />
+                            <div className="absolute inset-0 bg-black/30" />
+                            <div className="text-center relative z-10 p-6">
+                                <h4 className="text-xl font-black text-yellow-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(234,179,8,0.8)] animate-pulse">¡HOLD!</h4>
+                                <p className="text-sm text-gray-300 font-medium drop-shadow-md">Mantén la línea.</p>
+                            </div>
                         </div>
                     }
                 >
@@ -140,10 +150,20 @@ export default function AuditDashboard({ session }) {
                     icon={Activity}
                     className="border-l-4 border-l-blue-500 bg-blue-500/5 h-48"
                     delay={0.3}
+                    fullBleed={true}
                     backContent={
-                        <div className="text-center">
-                            <h4 className="text-xl font-black text-blue-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]">¡SIN DESCANSO!</h4>
-                            <p className="text-sm text-gray-300 font-medium">La perfección está en los detalles.</p>
+                        <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
+                            {/* Rocky Easter Egg */}
+                            <img
+                                src="/rocky.png"
+                                alt="No Rest"
+                                className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                            />
+                            <div className="absolute inset-0 bg-black/30" />
+                            <div className="text-center relative z-10 p-6">
+                                <h4 className="text-xl font-black text-blue-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse">¡SIN DESCANSO!</h4>
+                                <p className="text-sm text-gray-300 font-medium drop-shadow-md">La perfección está en los detalles.</p>
+                            </div>
                         </div>
                     }
                 >
@@ -156,10 +176,20 @@ export default function AuditDashboard({ session }) {
                     icon={CheckCircle}
                     className="border-l-4 border-l-green-500 bg-green-500/5 h-48"
                     delay={0.4}
+                    fullBleed={true}
                     backContent={
-                        <div className="text-center">
-                            <h4 className="text-xl font-black text-green-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]">¡VICTORIA!</h4>
-                            <p className="text-sm text-gray-300 font-medium">Solo aceptamos el 100%.</p>
+                        <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
+                            {/* Gatsby Easter Egg */}
+                            <img
+                                src="/gatsby.png"
+                                alt="Victory"
+                                className="absolute inset-0 w-full h-full object-cover opacity-50 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                            />
+                            <div className="absolute inset-0 bg-black/30" />
+                            <div className="text-center relative z-10 p-6">
+                                <h4 className="text-xl font-black text-green-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(34,197,94,0.8)] animate-pulse">¡VICTORIA!</h4>
+                                <p className="text-sm text-gray-300 font-medium drop-shadow-md">Solo aceptamos el 100%.</p>
+                            </div>
                         </div>
                     }
                 >
