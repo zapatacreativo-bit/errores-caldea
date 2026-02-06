@@ -118,9 +118,20 @@ export default function Home() {
                 </Head>
 
                 <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#050505]">
+                    {/* Animated Background GIF */}
+                    <div className="absolute inset-0 z-0">
+                        <img
+                            src="/assets/background.webp"
+                            className="w-full h-full object-cover opacity-60"
+                            alt="Background Animation"
+                            onError={(e) => e.target.style.display = 'none'} // Fallback if no GIF
+                        />
+                        <div className="absolute inset-0 bg-[#11069F]/80" />
+                    </div>
+
                     {/* Background Ethereal Elements */}
-                    <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
+                    <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-0" />
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none z-0" />
 
                     <div className="w-full max-w-lg relative z-10">
                         <GlassCard className="min-h-[500px] flex items-center justify-center">

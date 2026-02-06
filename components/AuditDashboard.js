@@ -6,6 +6,7 @@ import OnlineUsers from './OnlineUsers'
 import ChatWidget from './ChatWidget' // Import ChatWidget
 import { Activity, CheckCircle, AlertTriangle, AlertOctagon, BarChart2, Shield } from 'lucide-react'
 import RankingTraffic from './RankingTraffic'
+import BacklinkAnalysis from './BacklinkAnalysis'
 
 export default function AuditDashboard({ session }) {
 
@@ -132,10 +133,23 @@ export default function AuditDashboard({ session }) {
                         <BarChart2 className="w-4 h-4" /> Ranking & Traffic
                     </div>
                 </button>
+                <button
+                    onClick={() => setActiveTab('backlinks')}
+                    className={`px-6 py-3 text-sm font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'backlinks'
+                        ? 'text-white border-emerald-500'
+                        : 'text-gray-500 border-transparent hover:text-gray-300'
+                        }`}
+                >
+                    <div className="flex items-center gap-2">
+                        <Activity className="w-4 h-4" /> Backlinks & Authority
+                    </div>
+                </button>
             </div>
 
             {activeTab === 'ranking' ? (
                 <RankingTraffic />
+            ) : activeTab === 'backlinks' ? (
+                <BacklinkAnalysis />
             ) : (
                 <>
 
@@ -153,15 +167,15 @@ export default function AuditDashboard({ session }) {
                                     <img
                                         src="/leonidas.png"
                                         alt="Leonidas"
-                                        className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                                        className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
                                     />
                                     {/* Gradient for text readability only at bottom */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+                                    <div className="absolute inset-0 bg-black/40" />
 
                                     {/* Text Content */}
                                     <div className="text-center relative z-10 p-6">
-                                        <h4 className="text-xl font-black text-red-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-[pulse_3s_infinite]">¡ESTO ES ESPARTA!</h4>
-                                        <p className="text-sm text-gray-200 font-medium drop-shadow-md">Sin piedad con los errores críticos.</p>
+                                        <h4 className="text-2xl font-black text-red-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_15px_rgba(239,68,68,0.9)] animate-[pulse_3s_infinite]">¡ESTO ES ESPARTA!</h4>
+                                        <p className="text-lg text-white font-bold drop-shadow-lg">Sin piedad con los errores críticos.</p>
                                     </div>
                                 </div>
                             }
@@ -182,12 +196,12 @@ export default function AuditDashboard({ session }) {
                                     <img
                                         src="/braveheart.png"
                                         alt="Hold"
-                                        className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                                        className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+                                    <div className="absolute inset-0 bg-black/40" />
                                     <div className="text-center relative z-10 p-6">
-                                        <h4 className="text-xl font-black text-yellow-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(234,179,8,0.8)] animate-pulse">¡HOLD!</h4>
-                                        <p className="text-sm text-gray-200 font-medium drop-shadow-md">Mantén la línea.</p>
+                                        <h4 className="text-2xl font-black text-yellow-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_15px_rgba(234,179,8,0.9)] animate-pulse">¡HOLD!</h4>
+                                        <p className="text-lg text-white font-bold drop-shadow-lg">Mantén la línea.</p>
                                     </div>
                                 </div>
                             }
@@ -208,12 +222,12 @@ export default function AuditDashboard({ session }) {
                                     <img
                                         src="/rocky.png"
                                         alt="No Rest"
-                                        className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                                        className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+                                    <div className="absolute inset-0 bg-black/40" />
                                     <div className="text-center relative z-10 p-6">
-                                        <h4 className="text-xl font-black text-blue-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse">¡SIN DESCANSO!</h4>
-                                        <p className="text-sm text-gray-200 font-medium drop-shadow-md">La perfección está en los detalles.</p>
+                                        <h4 className="text-2xl font-black text-blue-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_15px_rgba(59,130,246,0.9)] animate-pulse">¡SIN DESCANSO!</h4>
+                                        <p className="text-lg text-white font-bold drop-shadow-lg">La perfección está en los detalles.</p>
                                     </div>
                                 </div>
                             }
@@ -234,12 +248,12 @@ export default function AuditDashboard({ session }) {
                                     <img
                                         src="/gatsby.png"
                                         alt="Victory"
-                                        className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
+                                        className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-[20s] ease-linear scale-100 group-hover:scale-125"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+                                    <div className="absolute inset-0 bg-black/40" />
                                     <div className="text-center relative z-10 p-6">
-                                        <h4 className="text-xl font-black text-green-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_10px_rgba(34,197,94,0.8)] animate-pulse">¡VICTORIA!</h4>
-                                        <p className="text-sm text-gray-200 font-medium drop-shadow-md">Solo aceptamos el 100%.</p>
+                                        <h4 className="text-2xl font-black text-green-500 mb-2 uppercase tracking-widest drop-shadow-[0_0_15px_rgba(34,197,94,0.9)] animate-pulse">¡VICTORIA!</h4>
+                                        <p className="text-lg text-white font-bold drop-shadow-lg">Solo aceptamos el 100%.</p>
                                     </div>
                                 </div>
                             }

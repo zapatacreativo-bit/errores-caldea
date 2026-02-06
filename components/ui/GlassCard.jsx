@@ -12,6 +12,7 @@ const GlassCard = ({
     isFlipped = false, // New prop for manual flip control
     manualFlip = false,  // Set to true to disable hover flip
     fullBleed = false, // Enable full bleed for back content
+    hoverEffect = true, // Enable/disable hover effects
     ...props
 }) => {
     // Shared Glass Styles for both Front and Back faces
@@ -51,17 +52,21 @@ const GlassCard = ({
 
                 {/* === FRONT FACE === */}
                 <div className={cn(baseGlassStyles, "relative z-10 p-6")}>
-                    {/* Dynamic Glass Reflection */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                    {hoverEffect && (
+                        <>
+                            {/* Dynamic Glass Reflection */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-                    {/* Shimmer Effect */}
-                    <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent w-[200%] pointer-events-none" />
+                            {/* Shimmer Effect */}
+                            <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent w-[200%] pointer-events-none" />
 
-                    {/* Decorative Gradient Blob */}
-                    <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/30 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/40 transition-colors duration-500" />
+                            {/* Decorative Gradient Blob */}
+                            <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/30 rounded-full blur-[80px] pointer-events-none group-hover:bg-blue-400/40 transition-colors duration-500" />
 
-                    {/* Inner "Thick Glass" Glow */}
-                    <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10 pointer-events-none group-hover:ring-white/30 transition-all duration-500" />
+                            {/* Inner "Thick Glass" Glow */}
+                            <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/10 pointer-events-none group-hover:ring-white/30 transition-all duration-500" />
+                        </>
+                    )}
 
                     {/* Header */}
                     {(title || Icon) && (

@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabaseClient'
 import OnlineUsers from './OnlineUsers'
 import ChatWidget from './ChatWidget'
 import { getRandomQuote } from '../lib/quotes'
+import RetroClock from './RetroClock'
+import PixelArtBreak from './PixelArtBreak'
 import { Power, Shield, LayoutDashboard } from 'lucide-react'
 
 export default function DashboardLayout({ children, session }) {
@@ -56,7 +58,7 @@ export default function DashboardLayout({ children, session }) {
                     </div>
 
                     {/* SEO Sage Quote (Persistent) - Marquee Style - Centered Absolute */}
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden xl:block w-[921px] overflow-hidden mask-linear-fade pointer-events-none">
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden xl:block w-[775px] overflow-hidden mask-linear-fade pointer-events-none">
                         <style jsx>{`
                             @keyframes marquee {
                                 0% { transform: translateX(100%); }
@@ -84,7 +86,10 @@ export default function DashboardLayout({ children, session }) {
                     {/* Right Section: Widgets & User */}
                     <div className="flex items-center gap-6 z-10">
 
-                        {/* Online Users Widget (Moved to Left) */}
+                        {/* Retro Clock Widget */}
+                        <div className="hidden lg:block">
+                            <RetroClock />
+                        </div>
 
                         {/* User Profile & Logout */}
                         <div className="flex items-center gap-4 pl-6 border-l border-white/10">
@@ -109,7 +114,7 @@ export default function DashboardLayout({ children, session }) {
                             </Link>
                             <button
                                 onClick={handleSignOut}
-                                className="bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 text-gray-400 hover:text-red-300 p-2 rounded-lg transition-all duration-300 group"
+                                className="bg-green-500/10 text-green-400 border border-green-500/30 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-300 p-2 rounded-lg transition-all duration-300 group shadow-[0_0_10px_rgba(34,197,94,0.2)] hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
                                 title="Cerrar Sesión"
                             >
                                 <Power className="w-5 h-5 transition-transform group-hover:scale-110" />
@@ -126,6 +131,9 @@ export default function DashboardLayout({ children, session }) {
 
             {/* Persistent Chat Widget */}
             <ChatWidget session={session} />
+
+            {/* Wellness Break Reminder */}
+            <PixelArtBreak />
         </div>
     )
 }

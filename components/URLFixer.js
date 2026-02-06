@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { Check, X, RefreshCw, ExternalLink, AlertTriangle, ArrowUp, ArrowDown, Zap } from 'lucide-react'
+import { Check, X, RefreshCw, ExternalLink, AlertTriangle, ArrowUp, ArrowDown, Zap, Star } from 'lucide-react'
 
 export default function URLFixer({
     urls,
@@ -81,10 +81,13 @@ export default function URLFixer({
         // Issue Type 15: Backlinks (swap URL/linked_from)
         if (parseInt(issueTypeId) === 15) {
             return {
-                mainUrl: item.linked_from,
-                secondaryUrl: item.url,
-                secondaryLabel: 'Encontrado en (Origen):',
-                isOnPageAudit: false
+                mainUrl: item.url, // External URL is now MAIN
+                secondaryUrl: item.linked_from, // Target is Secondary
+                secondaryLabel: 'Apunta a:',
+                isOnPageAudit: false,
+                showBadges: true, // New flag to force badges in main header
+                trafficPercentage: item.traffic_percentage || 0,
+                targetKeywords: item.target_keywords || null
             };
         }
         // Issue Type 7: Duplicate Titles
@@ -94,14 +97,20 @@ export default function URLFixer({
                 secondaryUrl: item.linked_from,
                 secondaryLabel: 'Encontrado en:',
                 isOnPageAudit: false,
-                pageTitle: item.page_title
+                pageTitle: item.page_title,
+                showBadges: false,
+                trafficPercentage: 0,
+                targetKeywords: null
             };
         }
         return {
             mainUrl: item.url,
             secondaryUrl: item.linked_from,
             secondaryLabel: 'Encontrado en:',
-            isOnPageAudit: false
+            isOnPageAudit: false,
+            showBadges: false,
+            trafficPercentage: 0,
+            targetKeywords: null
         };
     };
 
@@ -296,6 +305,17 @@ export default function URLFixer({
                         <span className="text-base mr-1">👑</span> Autoridad
                         {sortField === 'authority_score' && (sortOrder === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
                     </button>
+
+                    {/* Traffic Sort - Only for Issue 15 (Backlinks) */}
+                    {parseInt(issueTypeId) === 15 && (
+                        <button
+                            onClick={() => onSortChange && onSortChange('traffic_percentage')}
+                            className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors ${sortField === 'traffic_percentage' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                        >
+                            <span className="text-base mr-1">📈</span> Tráfico
+                            {sortField === 'traffic_percentage' && (sortOrder === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -317,7 +337,23 @@ export default function URLFixer({
             >
                 <div style={{ minWidth: '1200px' }}> {/* Force width to enable scroll */}
                     {localUrls.map((item) => {
-                        const { mainUrl, secondaryUrl, secondaryLabel, isOnPageAudit, pageTitle, metaDescription, h1 } = getDisplayValues(item);
+                        const { mainUrl, secondaryUrl, secondaryLabel, isOnPageAudit, pageTitle, metaDescription, h1, showBadges, trafficPercentage, targetKeywords } = getDisplayValues(item);
+
+                        // Star Rating Logic
+                        const getStarRating = (as, ts) => {
+                            const a = Number(as) || 0;
+                            const t = Number(ts) || 0;
+
+                            if (t >= 60) return 0; // Toxic = 0 stars
+                            if (a >= 50 && t < 30) return 5; // Elite
+                            if (a >= 30 && t < 40) return 4; // Great
+                            if (a >= 15 && t < 50) return 3; // Good
+                            if (a >= 5) return 2; // Average
+                            if (a > 0) return 1; // Poor
+                            return 0; // No value
+                        };
+
+                        const stars = getStarRating(item.authority_score, item.toxicity_score);
 
                         // Determine Row Style
                         let rowClass = '';
@@ -367,8 +403,8 @@ export default function URLFixer({
                                                 </span>
                                             )}
 
-                                            {/* AS/TS Badges for On-Page SEO (Issue Type 16) */}
-                                            {isOnPageAudit && (
+                                            {/* AS/TS Badges for On-Page SEO or Backlinks */}
+                                            {(isOnPageAudit || showBadges) && (
                                                 <div className="flex items-center gap-2">
                                                     {(item.toxicity_score !== null && item.toxicity_score !== undefined) && (
                                                         (() => {
@@ -392,13 +428,22 @@ export default function URLFixer({
                                                                 ? 'bg-blue-950/40 border-blue-500/30 text-blue-300'
                                                                 : score >= 20
                                                                     ? 'bg-purple-950/40 border-purple-500/30 text-purple-300'
-                                                                    : 'bg-gray-800/40 border-gray-600/30 text-gray-400';
+                                                                    : 'bg-white/5 border-white/10 text-gray-300';
                                                             return (
                                                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold border ${badgeStyle}`}>
                                                                     👑 AS: {score}
                                                                 </span>
                                                             );
                                                         })()
+                                                    )}
+
+                                                    {/* Elegant Star Rating */}
+                                                    {stars > 0 && (
+                                                        <div className="flex gap-0.5 items-center ml-2 bg-yellow-500/5 px-1.5 py-0.5 rounded border border-yellow-500/10" title={`${stars} Estrellas de Calidad`}>
+                                                            {[...Array(stars)].map((_, i) => (
+                                                                <Star key={i} className="w-3 h-3 text-amber-400 fill-amber-400" />
+                                                            ))}
+                                                        </div>
                                                     )}
                                                 </div>
                                             )}
@@ -412,50 +457,85 @@ export default function URLFixer({
                                         )}
 
                                         {secondaryUrl && (
-                                            <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
-                                                <span className="text-[10px] uppercase tracking-wide font-bold text-gray-600 border border-white/5 bg-white/5 px-1.5 py-0.5 rounded">{secondaryLabel}</span>
-                                                <a href={secondaryUrl} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white truncate max-w-xs md:max-w-md transition-colors text-xs">{secondaryUrl}</a>
+                                            <div className="flex flex-col gap-1.5 mt-1">
+                                                <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
+                                                    <span className="text-[10px] uppercase tracking-wide font-bold text-gray-600 border border-white/5 bg-white/5 px-1.5 py-0.5 rounded">{secondaryLabel}</span>
+                                                    <a href={secondaryUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 hover:underline truncate max-w-full md:max-w-2xl transition-colors text-xs font-medium">{secondaryUrl}</a>
 
-                                                {/* Toxicity Badge - Mini */}
-                                                {(item.toxicity_score !== null && item.toxicity_score !== undefined) && (
-                                                    (() => {
-                                                        const score = Number(item.toxicity_score);
-                                                        const isHigh = score >= 60;
-                                                        const isMedium = score >= 30 && score < 60;
+                                                    {/* Toxicity Badge - Mini (Only if NOT showing in main header) */}
+                                                    {(!showBadges && item.toxicity_score !== null && item.toxicity_score !== undefined) && (
+                                                        (() => {
+                                                            const score = Number(item.toxicity_score);
+                                                            const isHigh = score >= 60;
+                                                            const isMedium = score >= 30 && score < 60;
 
-                                                        const badgeStyle = isHigh
-                                                            ? 'bg-red-950/40 border-red-500/30 text-red-300'
-                                                            : isMedium
-                                                                ? 'bg-yellow-950/40 border-yellow-500/30 text-yellow-300'
-                                                                : 'bg-green-950/40 border-green-500/30 text-green-300';
+                                                            const badgeStyle = isHigh
+                                                                ? 'bg-red-950/40 border-red-500/30 text-red-300'
+                                                                : isMedium
+                                                                    ? 'bg-yellow-950/40 border-yellow-500/30 text-yellow-300'
+                                                                    : 'bg-green-950/40 border-green-500/30 text-green-300';
 
-                                                        return (
-                                                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold border ml-2 ${badgeStyle}`}>
-                                                                <span>🧪 TS: {score}</span>
-                                                            </span>
-                                                        );
-                                                    })()
-                                                )}
+                                                            return (
+                                                                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold border ml-2 ${badgeStyle}`}>
+                                                                    <span>🧪 TS: {score}</span>
+                                                                </span>
+                                                            );
+                                                        })()
+                                                    )}
 
-                                                {/* Authority Score Badge - Mini */}
-                                                {(item.authority_score !== null && item.authority_score !== undefined) && (
-                                                    (() => {
-                                                        const score = Number(item.authority_score);
-                                                        const isHigh = score >= 40;
-                                                        const isMedium = score >= 20 && score < 40;
+                                                    {/* Authority Score Badge - Mini (Only if NOT showing in main header) */}
+                                                    {(!showBadges && item.authority_score !== null && item.authority_score !== undefined) && (
+                                                        (() => {
+                                                            const score = Number(item.authority_score);
+                                                            const isHigh = score >= 40;
+                                                            const isMedium = score >= 20 && score < 40;
 
-                                                        const badgeStyle = isHigh
-                                                            ? 'bg-blue-950/40 border-blue-500/30 text-blue-300'
-                                                            : isMedium
-                                                                ? 'bg-purple-950/40 border-purple-500/30 text-purple-300'
-                                                                : 'bg-gray-800/40 border-gray-600/30 text-gray-400';
+                                                            const badgeStyle = isHigh
+                                                                ? 'bg-blue-950/40 border-blue-500/30 text-blue-300'
+                                                                : isMedium
+                                                                    ? 'bg-purple-950/40 border-purple-500/30 text-purple-300'
+                                                                    : 'bg-white/5 border-white/10 text-gray-300';
 
-                                                        return (
-                                                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold border ${badgeStyle}`}>
-                                                                <span>👑 AS: {score}</span>
-                                                            </span>
-                                                        );
-                                                    })()
+                                                            return (
+                                                                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold border ${badgeStyle}`}>
+                                                                    👑 AS: {score}
+                                                                </span>
+                                                            );
+                                                        })()
+                                                    )}
+                                                </div>
+
+                                                {/* Traffic Data Visualization */}
+                                                {(trafficPercentage > 0 || targetKeywords) && (
+                                                    <div className="flex flex-col gap-1 ml-1 pl-2 border-l border-white/10 mt-0.5">
+                                                        {/* Traffic Percentage Badge */}
+                                                        {trafficPercentage > 0 && (
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[10px] uppercase tracking-wide font-bold text-emerald-400 flex items-center gap-1">
+                                                                    📈 Tráfico Potencial:
+                                                                </span>
+                                                                <span className="text-xs font-bold text-white bg-emerald-950/30 px-1.5 rounded border border-emerald-500/20">
+                                                                    {Number(trafficPercentage).toFixed(2)}%
+                                                                </span>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Top Keywords List */}
+                                                        {targetKeywords && (
+                                                            <div className="flex flex-wrap gap-1 mt-0.5">
+                                                                {(() => {
+                                                                    try {
+                                                                        const kws = JSON.parse(targetKeywords);
+                                                                        return kws.map((kw, i) => (
+                                                                            <span key={i} className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] text-gray-400 hover:text-gray-300 transition-colors cursor-default">
+                                                                                {kw}
+                                                                            </span>
+                                                                        ));
+                                                                    } catch (e) { return null; }
+                                                                })()}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 )}
                                             </div>
                                         )}
@@ -577,9 +657,31 @@ export default function URLFixer({
                     </button>
                 </div>
 
-                <span className="text-sm text-gray-400 font-medium">
-                    Página <span className="text-white">{currentPage}</span> de <span className="text-white">{totalPages || 1}</span>
-                </span>
+                <div className="flex items-center gap-1 overflow-x-auto max-w-[200px] sm:max-w-none">
+                    {/* Page Numbers Window (-5 to +5) */}
+                    {(() => {
+                        const windowSize = 5;
+                        const start = Math.max(1, currentPage - windowSize);
+                        const end = Math.min(totalPages || 1, currentPage + windowSize);
+                        const pages = [];
+
+                        for (let i = start; i <= end; i++) {
+                            pages.push(
+                                <button
+                                    key={i}
+                                    onClick={() => onPageChange(i)}
+                                    className={`w-8 h-8 rounded-md text-xs font-bold transition-all ${currentPage === i
+                                        ? 'bg-blue-600 text-white shadow-lg scale-110 border border-blue-500'
+                                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/5'
+                                        }`}
+                                >
+                                    {i}
+                                </button>
+                            );
+                        }
+                        return pages;
+                    })()}
+                </div>
 
                 <div className="flex gap-2">
                     <button

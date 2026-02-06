@@ -9,7 +9,7 @@ import { ArrowLeft, CheckCircle, AlertTriangle, AlertOctagon, Activity, Power } 
 
 export default function FixPage() {
     const router = useRouter()
-    const { id } = router.query
+    const { id } = router.query // ID from URL (e.g., 15)
 
     const [session, setSession] = useState(null)
     const [issueType, setIssueType] = useState(null)

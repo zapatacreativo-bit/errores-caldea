@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import GlassCard from './ui/GlassCard'
+import { getRandomHistoricalQuotes } from '../lib/quotes'
 import { ArrowUp, ArrowDown, Search, Filter, TrendingUp, TrendingDown, DollarSign, Activity, Eye, Zap } from 'lucide-react'
 
 export default function RankingTraffic() {
@@ -13,13 +14,21 @@ export default function RankingTraffic() {
         avgPosition: 0
     })
     const [page, setPage] = useState(1)
-    const [search, setSearch] = useState('')
+    // We need internal state for Market
+    const [market, setMarket] = useState('es') // 'es' | 'fr' | 'us'
+    const [searchTerm, setSearchTerm] = useState('')
     const [sortConfig, setSortConfig] = useState({ key: 'traffic', direction: 'desc' })
+
     const itemsPerPage = 50
+    const [cardQuotes, setCardQuotes] = useState([])
+
+    useEffect(() => {
+        setCardQuotes(getRandomHistoricalQuotes(4))
+    }, [])
 
     useEffect(() => {
         fetchData()
-    }, [page, search, sortConfig])
+    }, [page, searchTerm, sortConfig, market]) // Include market dependency
 
     async function fetchData() {
         setLoading(true)
@@ -28,6 +37,7 @@ export default function RankingTraffic() {
             const { data: statsData, error: statsError } = await supabase
                 .from('ranking_traffic')
                 .select('traffic, traffic_cost, position')
+                .eq('market', market) // Filter by market
 
             if (!statsError && statsData) {
                 const totalTraffic = statsData.reduce((acc, curr) => acc + (Number(curr.traffic) || 0), 0)
@@ -44,9 +54,10 @@ export default function RankingTraffic() {
             let query = supabase
                 .from('ranking_traffic')
                 .select('*')
+                .eq('market', market) // Filter by market
 
-            if (search) {
-                query = query.ilike('keyword', `%${search}%`)
+            if (searchTerm) {
+                query = query.ilike('keyword', `%${searchTerm}%`)
             }
 
             query = query.order(sortConfig.key, { ascending: sortConfig.direction === 'asc' })
@@ -71,15 +82,76 @@ export default function RankingTraffic() {
         })
     }
 
-    const formatCurrency = (val) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
+    const formatCurrency = (val) => {
+        const currency = market === 'us' ? 'USD' : 'EUR'
+        const locale = market === 'us' ? 'en-US' : 'es-ES'
+        const secureLocale = market === 'fr' ? 'fr-FR' : locale
+        return new Intl.NumberFormat(secureLocale, { style: 'currency', currency }).format(val)
+    }
     const formatNumber = (val) => new Intl.NumberFormat('es-ES').format(val)
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
+
+            {/* Market Tabs */}
+            <div className="flex gap-2 border-b border-white/10 pb-1">
+                <button
+                    onClick={() => { setMarket('es'); setPage(1); }}
+                    className={`px-4 py-2 text-sm font-bold uppercase tracking-wider transition-all rounded-t-lg flex items-center gap-2 ${market === 'es' ? 'bg-yellow-500/20 text-yellow-400 border-b-2 border-yellow-500' : 'text-gray-500 hover:text-white'
+                        }`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" className="w-5 h-3.5 rounded-sm shadow-sm">
+                        <rect width="750" height="500" fill="#c60b1e" />
+                        <rect width="750" height="250" y="125" fill="#ffc400" />
+                    </svg>
+                    España
+                </button>
+                <button
+                    onClick={() => { setMarket('fr'); setPage(1); }}
+                    className={`px-4 py-2 text-sm font-bold uppercase tracking-wider transition-all rounded-t-lg flex items-center gap-2 ${market === 'fr' ? 'bg-blue-500/20 text-blue-400 border-b-2 border-blue-500' : 'text-gray-500 hover:text-white'
+                        }`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className="w-5 h-3.5 rounded-sm shadow-sm">
+                        <rect width="900" height="600" fill="#ED2939" />
+                        <rect width="600" height="600" fill="#fff" />
+                        <rect width="300" height="600" fill="#002395" />
+                    </svg>
+                    Francia
+                </button>
+                <button
+                    onClick={() => { setMarket('us'); setPage(1); }}
+                    className={`px-4 py-2 text-sm font-bold uppercase tracking-wider transition-all rounded-t-lg flex items-center gap-2 ${market === 'us' ? 'bg-red-500/20 text-red-400 border-b-2 border-red-500' : 'text-gray-500 hover:text-white'
+                        }`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1235 650" className="w-5 h-3.5 rounded-sm shadow-sm">
+                        <rect width="1235" height="650" fill="#b22234" />
+                        <path d="M0,50H1235M0,150H1235M0,250H1235M0,350H1235M0,450H1235M0,550H1235" stroke="#fff" strokeWidth="50" />
+                        <rect width="494" height="350" fill="#3c3b6e" />
+                    </svg>
+                    USA
+                </button>
+            </div>
+
             {/* HUD Header Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <GlassCard className="p-6 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-[40px] group-hover:bg-blue-500/20 transition-all duration-500" />
+                <GlassCard
+                    className="p-6 relative overflow-hidden group"
+                    fullBleed={true}
+                    backContent={(
+                        <div className="relative h-full w-full flex items-center justify-center">
+                            <img src="/assets/flip-cards/coffee.png" alt="Inspiration" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                            <div className="absolute inset-0 bg-black/40" />
+                            <div className="relative z-10 px-6 text-center">
+                                <p className="text-lg font-bold text-white italic drop-shadow-lg mb-3 leading-relaxed">
+                                    "{cardQuotes[0]?.text}"
+                                </p>
+                                <p className="text-xs font-bold text-blue-400 uppercase tracking-widest">
+                                    — {cardQuotes[0]?.author}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                >
                     <div className="relative z-10">
                         <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
                             <Activity className="w-4 h-4 text-blue-400" /> Tráfico Est. Mensual
@@ -90,8 +162,24 @@ export default function RankingTraffic() {
                     </div>
                 </GlassCard>
 
-                <GlassCard className="p-6 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-[40px] group-hover:bg-emerald-500/20 transition-all duration-500" />
+                <GlassCard
+                    className="p-6 relative overflow-hidden group"
+                    fullBleed={true}
+                    backContent={(
+                        <div className="relative h-full w-full flex items-center justify-center">
+                            <img src="/assets/flip-cards/money.png" alt="Inspiration" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                            <div className="absolute inset-0 bg-black/40" />
+                            <div className="relative z-10 px-6 text-center">
+                                <p className="text-lg font-bold text-white italic drop-shadow-lg mb-3 leading-relaxed">
+                                    "{cardQuotes[1]?.text}"
+                                </p>
+                                <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest">
+                                    — {cardQuotes[1]?.author}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                >
                     <div className="relative z-10">
                         <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
                             <DollarSign className="w-4 h-4 text-emerald-400" /> Valor de Tráfico
@@ -102,8 +190,24 @@ export default function RankingTraffic() {
                     </div>
                 </GlassCard>
 
-                <GlassCard className="p-6 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-[40px] group-hover:bg-amber-500/20 transition-all duration-500" />
+                <GlassCard
+                    className="p-6 relative overflow-hidden group"
+                    fullBleed={true}
+                    backContent={(
+                        <div className="relative h-full w-full flex items-center justify-center">
+                            <img src="/assets/flip-cards/mambo.png" alt="Inspiration" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                            <div className="absolute inset-0 bg-black/40" />
+                            <div className="relative z-10 px-6 text-center">
+                                <p className="text-lg font-bold text-white italic drop-shadow-lg mb-3 leading-relaxed">
+                                    "{cardQuotes[2]?.text}"
+                                </p>
+                                <p className="text-xs font-bold text-amber-400 uppercase tracking-widest">
+                                    — {cardQuotes[2]?.author}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                >
                     <div className="relative z-10">
                         <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
                             <Zap className="w-4 h-4 text-amber-400" /> Top 3 Keywords
@@ -114,8 +218,24 @@ export default function RankingTraffic() {
                     </div>
                 </GlassCard>
 
-                <GlassCard className="p-6 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-[40px] group-hover:bg-purple-500/20 transition-all duration-500" />
+                <GlassCard
+                    className="p-6 relative overflow-hidden group"
+                    fullBleed={true}
+                    backContent={(
+                        <div className="relative h-full w-full flex items-center justify-center">
+                            <img src="/assets/flip-cards/rocket.png" alt="Inspiration" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                            <div className="absolute inset-0 bg-black/40" />
+                            <div className="relative z-10 px-6 text-center">
+                                <p className="text-lg font-bold text-white italic drop-shadow-lg mb-3 leading-relaxed">
+                                    "{cardQuotes[3]?.text}"
+                                </p>
+                                <p className="text-xs font-bold text-purple-400 uppercase tracking-widest">
+                                    — {cardQuotes[3]?.author}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                >
                     <div className="relative z-10">
                         <div className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
                             <TrendingUp className="w-4 h-4 text-purple-400" /> Posición Media
@@ -128,7 +248,7 @@ export default function RankingTraffic() {
             </div>
 
             {/* Controls & Table */}
-            <GlassCard className="p-6">
+            <GlassCard className="p-6" hoverEffect={false}>
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                     <div className="flex items-center gap-2">
                         <h2 className="text-xl font-bold text-white">Keywords & Rankings</h2>
@@ -142,8 +262,8 @@ export default function RankingTraffic() {
                         <input
                             type="text"
                             placeholder="Buscar keyword..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             className="bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500/50 w-64 transition-all"
                         />
                     </div>
@@ -181,7 +301,7 @@ export default function RankingTraffic() {
                                     </td>
                                 </tr>
                             ) : keywords.map((row, idx) => (
-                                <tr key={idx} className="hover:bg-white/5 transition-colors group">
+                                <tr key={idx} className="transition-colors group">
                                     <td className="p-4">
                                         <div className="font-medium text-white group-hover:text-blue-400 transition-colors">
                                             {row.keyword}
