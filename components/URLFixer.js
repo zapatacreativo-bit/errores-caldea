@@ -320,7 +320,9 @@ export default function URLFixer({
                                             }`}>
                                             <input type="checkbox" className="hidden" checked={item.status === 'fixed'} onChange={() => toggleFix(item.id, item.status)} disabled={updating === item.id || item.status === 'ignored'} />
                                             {item.status === 'fixed' ? <Check className="w-4 h-4 mr-2" /> : <div className="w-4 h-4 mr-2 border-2 border-current rounded-sm" />}
-                                            <span className="text-xs font-bold uppercase tracking-wider">{item.status === 'fixed' ? 'CORREGIDO' : '🔧 REPARAR'}</span>
+                                            <span className="text-xs font-bold uppercase tracking-wider">
+                                                {item.status === 'fixed' ? 'CORREGIDO' : <><span className="text-sm mr-1">🔧</span> REPARAR</>}
+                                            </span>
                                         </label>
 
                                         {item.status !== 'ignored' && (
