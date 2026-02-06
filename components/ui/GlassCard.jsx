@@ -97,7 +97,7 @@ const GlassCard = ({
                         <div className="absolute inset-0 bg-gradient-to-tl from-red-600/20 to-transparent opacity-50 pointer-events-none" />
                         <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-red-500/20 rounded-full blur-[80px] pointer-events-none" />
 
-                        <div className="relative z-10 transform translate-z-10 w-full">
+                        <div className="relative z-10 transform translate-z-10 w-full h-full">
                             {backContent}
                         </div>
                     </div>
