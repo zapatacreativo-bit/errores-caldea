@@ -10,7 +10,8 @@ const GlassCard = ({
     delay = 0,
     backContent, // Prop for the back of the card
     isFlipped = false, // New prop for manual flip control
-    manualFlip = false  // Set to true to disable hover flip
+    manualFlip = false,  // Set to true to disable hover flip
+    ...props
 }) => {
     // Shared Glass Styles for both Front and Back faces
     const glassStyles = cn(
@@ -24,6 +25,7 @@ const GlassCard = ({
 
     return (
         <motion.div
+            {...props}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
