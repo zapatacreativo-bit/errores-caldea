@@ -286,23 +286,23 @@ export default function URLFixer({
                 <div className="flex gap-2">
                     <button
                         onClick={() => onSortChange && onSortChange('url')}
-                        className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors ${sortField === 'url' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                        className={`group relative flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all active:scale-95 touch-manipulation select-none ${sortField === 'url' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                     >
-                        <span className="text-base mr-1">🌍</span> Nombre / URL
+                        <span className="text-base">🌍</span> Nombre / URL
                         {sortField === 'url' && (sortOrder === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
                     </button>
                     <button
                         onClick={() => onSortChange && onSortChange('toxicity_score')}
-                        className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors ${sortField === 'toxicity_score' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                        className={`group relative flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all active:scale-95 touch-manipulation select-none ${sortField === 'toxicity_score' ? 'bg-red-500/20 text-red-400 border border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                     >
-                        <span className="text-base mr-1">🧪</span> Toxicidad
+                        <span className="text-base">🧪</span> Toxicidad
                         {sortField === 'toxicity_score' && (sortOrder === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
                     </button>
                     <button
                         onClick={() => onSortChange && onSortChange('authority_score')}
-                        className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors ${sortField === 'authority_score' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                        className={`group relative flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all active:scale-95 touch-manipulation select-none ${sortField === 'authority_score' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                     >
-                        <span className="text-base mr-1">👑</span> Autoridad
+                        <span className="text-base">👑</span> Autoridad
                         {sortField === 'authority_score' && (sortOrder === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
                     </button>
 
@@ -310,9 +310,9 @@ export default function URLFixer({
                     {parseInt(issueTypeId) === 15 && (
                         <button
                             onClick={() => onSortChange && onSortChange('traffic_percentage')}
-                            className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors ${sortField === 'traffic_percentage' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                            className={`group relative flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all active:scale-95 touch-manipulation select-none ${sortField === 'traffic_percentage' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                         >
-                            <span className="text-base mr-1">📈</span> Tráfico
+                            <span className="text-base">📈</span> Tráfico
                             {sortField === 'traffic_percentage' && (sortOrder === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
                         </button>
                     )}
