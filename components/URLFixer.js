@@ -614,7 +614,7 @@ export default function URLFixer({
                                             }`}>
                                             <input
                                                 type="checkbox"
-                                                className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
+                                                className="absolute inset-0 w-full h-full opacity-0 z-50 cursor-pointer appearance-none"
                                                 checked={item.status === 'fixed'}
                                                 onChange={() => toggleFix(item.id, item.status)}
                                                 disabled={updating === item.id || item.status === 'ignored'}
