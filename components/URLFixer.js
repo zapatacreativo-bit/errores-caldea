@@ -608,22 +608,25 @@ export default function URLFixer({
                                     </div>
 
                                     <div className="flex items-center gap-3">
-                                        <label className={`relative inline-flex items-center cursor-pointer select-none px-4 py-2 rounded-lg border transition-all ${item.status === 'fixed'
-                                            ? 'bg-green-500/20 border-green-500/30 text-green-300 shadow-[0_0_10px_rgba(34,197,94,0.2)]'
-                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20'
-                                            }`}>
-                                            <input
-                                                type="checkbox"
-                                                className="absolute inset-0 w-full h-full opacity-0 z-50 cursor-pointer appearance-none"
-                                                checked={item.status === 'fixed'}
-                                                onChange={() => toggleFix(item.id, item.status)}
-                                                disabled={updating === item.id || item.status === 'ignored'}
-                                            />
+                                        <div
+                                            onClick={() => {
+                                                if (updating !== item.id && item.status !== 'ignored') {
+                                                    toggleFix(item.id, item.status)
+                                                }
+                                            }}
+                                            role="checkbox"
+                                            aria-checked={item.status === 'fixed'}
+                                            tabIndex={0}
+                                            className={`relative inline-flex items-center cursor-pointer select-none px-4 py-2 rounded-lg border transition-all active:scale-95 touch-manipulation ${item.status === 'fixed'
+                                                ? 'bg-green-500/20 border-green-500/30 text-green-300 shadow-[0_0_10px_rgba(34,197,94,0.2)]'
+                                                : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20'
+                                                } ${updating === item.id || item.status === 'ignored' ? 'opacity-50 cursor-not-allowed' : ''}`}>
+
                                             {item.status === 'fixed' ? <Check className="w-4 h-4 mr-2" /> : <div className="w-4 h-4 mr-2 border-2 border-current rounded-sm" />}
                                             <span className="text-xs font-bold uppercase tracking-wider">
                                                 {item.status === 'fixed' ? 'VISTO' : <><span className="text-sm mr-1">👁️</span> VISTO</>}
                                             </span>
-                                        </label>
+                                        </div>
 
                                         {item.status !== 'ignored' && (
                                             <button onClick={() => ignoreUrl(item.id)} disabled={updating === item.id} className="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors" title="Ignorar">
