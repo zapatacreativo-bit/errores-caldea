@@ -1,0 +1,12 @@
+UI_Category,Recommended_Pattern,Style_Priority,Color_Mood,Typography_Mood,Key_Effects,Anti_Patterns,Decision_Rules,Severity
+SaaS,Bento Grid / Sidebar,Glassmorphism + Minimalism,Professional / Tech,Clean / Sans-serif,Subtle hover transitions + Skeleton screens,Clutter / High-contrast neon,{},MEDIUM
+E-commerce,Hero-centric / Product Grid,Flat Design + Photocentric,Emotional / Trust,Bold / Elegant,Hover lifts + Smooth cart animations,Distracting background videos,{},HIGH
+Healthcare,Minimal / Informative,Clean / Warm Minimalism,Trust / Safety,Approachability / Serif,Soft shadows + Slow transitions,Aggressive red accents / Chaotic layouts,{},CRITICAL
+Portfolio,Experimental / Full-page,Interactive Brutalism + Neobrutalism,Creative / Individual,Unique / Contrast,Parallax + Page transitions,Generic templates / Overused stock photos,{},MEDIUM
+Service,Trust-focused / Hero + Social Proof,Professional / Minimal,Service-oriented / Accessible,Reliable / Clear,Testimonial sliders + Process timelines,Hidden pricing / Complex navigation,{},HIGH
+Dashboard,Data-heavy / Modular,Compact / Clean,Analytical / Precise,Functional / Monospace elements,Real-time updates + Tooltips,Large unnecessary images / Tiny font size,{},MEDIUM
+Landing Page,Convert-first / Scannable,Visual-heavy / Contrast,Action-oriented / Vibrant,Punchy / Modern,Sticky CTAs + Entrance animations,Walls of text / Slow load times,{},HIGH
+Fintech,Secure / Modular,Premium Minimalism + Glassmorphism,Corporate / Elite,Financial / Trust,FaceID/Auth animations + Masking,Gimmicky gamification,{"regulatory": true},CRITICAL
+Beauty,Aesthetic / Lush,Soft Minimalism + Fluid,Luxury / Calming,Elegant / Serif pairings,Fade-ins + High-quality imagery,Industrial icons / Harsh grids,{},MEDIUM
+Education,Structured / Guided,Bento Grid + Playful,Knowledge-oriented / Calm,Readable / Friendly,Focus states + Progress bars,Over-saturated nursery colors for adults,{},MEDIUM
+Gaming,Immersive / Dynamic,Cyberpunk / Neon-noir,High-energy / Dark,Impactful / Digital,Glitch effects + Particles,Low-contrast text / Static layouts,{},MEDIUM
